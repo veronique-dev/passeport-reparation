@@ -35,7 +35,11 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/diagnosis_db
       SPRING_DATASOURCE_USERNAME: passeport
       SPRING_DATASOURCE_PASSWORD: passeport123
-      VISION_PROVIDER: mock
+      VISION_PROVIDER: ${VISION_PROVIDER:-mock}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com}
+      OPENAI_VISION_MODEL: ${OPENAI_VISION_MODEL:-gpt-4o-mini}
+      MEDIA_SERVICE_URL: http://media-service:8083
     depends_on:
       postgres:
         condition: service_healthy

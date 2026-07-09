@@ -4,28 +4,43 @@
 
 Proposer une **suggestion IA** de catégorie / panne à partir de la photo, **sans remplacer** la confirmation utilisateur (source de vérité MVP).
 
-## Parcours cible
+## Parcours
 
 ```
-Photo → Suggestion IA (optionnelle) → Confirmation user → Estimation → Réparateurs
+Photo → Upload → POST /api/diagnoses/suggest → Préremplissage UI → Confirmation user → POST /api/diagnoses
 ```
 
-## Principes
+## Providers
 
-1. L’utilisateur peut toujours corriger / choisir « Autre »
-2. Pas d’estimation sans `category` confirmée
-3. Provider derrière interface `VisionClient` (OpenAI / Claude / mock)
-4. Mode `VISION_PROVIDER=mock|openai|off` via env
+| `VISION_PROVIDER` | Comportement |
+|-------------------|--------------|
+| `mock` (défaut) | Suggestion déterministe sans clé API |
+| `openai` | Appel OpenAI Vision (`OPENAI_API_KEY` requis) |
+| `off` | Pas de suggestion utile — choix manuel |
 
-## Tâches prévues
+## API
 
-- [ ] Réintroduire `VisionClient` + implémentation OpenAI (vision)
-- [ ] Endpoint `POST /api/diagnoses/suggest` `{ mediaId }` → suggestion
-- [ ] UI : afficher suggestion pré-remplie, éditable
-- [ ] Tests unitaires + E2E suggestion
-- [ ] Doc architecture / .env.example
+`POST /api/diagnoses/suggest`
 
-## Hors scope de cette branche
+```json
+{ "mediaId": "..." }
+```
 
-- Suppression de la confirmation manuelle
-- DIY / multi-villes / auth
+Réponse : `category`, `suggestedIssueCode`, `confidence`, `rationale`, `suggestionOnly: true`.
+
+## Config
+
+```bash
+VISION_PROVIDER=mock   # ou openai
+OPENAI_API_KEY=sk-...
+MEDIA_SERVICE_URL=http://media-service:8083
+```
+
+## Statut
+
+- [x] `VisionClient` + mock / openai / off
+- [x] Endpoint suggest
+- [x] UI suggestion pré-remplie éditable
+- [x] Tests unitaires vision
+- [ ] E2E suggest (optionnel)
+- [ ] Clé OpenAI en environnement réel

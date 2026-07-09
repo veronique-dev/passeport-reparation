@@ -20,6 +20,12 @@ spring:
 app:
   vision:
     provider: ${VISION_PROVIDER:mock}
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+      model: ${OPENAI_VISION_MODEL:gpt-4o-mini}
+  media:
+    service-url: ${MEDIA_SERVICE_URL:http://localhost:8083}
 
 springdoc:
   api-docs:

@@ -17,7 +17,7 @@
           </div>
           <p class="home__photo-kicker">Capture</p>
           <p class="home__photo-title">Pose ton appareil cassé face à l’objectif</p>
-          <p class="home__photo-hint">Puis confirme la catégorie et le type de panne</p>
+          <p class="home__photo-hint">Suggestion IA puis confirmation manuelle</p>
         </div>
       </ng-container>
 
@@ -29,11 +29,11 @@
     </div>
 
     <div class="home__copy container">
-      <p class="home__eyebrow">Photo + confirmation</p>
+      <p class="home__eyebrow">Photo + suggestion + confirmation</p>
       <h1>Passeport de réparation</h1>
       <p class="home__lead">
-        Importe une photo, indique l’appareil et le symptôme :
-        on estime le coût et on te propose des réparateurs locaux.
+        Importe une photo : l’IA propose une catégorie et une panne,
+        tu confirmes ou corriges, puis on estime le coût.
       </p>
 
       <div class="home__actions">
@@ -42,7 +42,17 @@
         </button>
       </div>
 
-      <section class="confirm" *ngIf="selectedFile">
+      <p class="confirm__loading" *ngIf="suggesting">Analyse de la photo…</p>
+
+      <section class="confirm" *ngIf="selectedFile && !suggesting">
+        <div class="suggest" *ngIf="suggestion as s">
+          <p class="suggest__label">Suggestion {{ s.provider }} · {{ (s.confidence * 100) | number:'1.0-0' }}%</p>
+          <strong>{{ s.applianceLabel }}</strong>
+          <span>{{ s.probableIssue }}</span>
+          <em>{{ s.rationale }}</em>
+          <p class="suggest__note">Tu peux corriger ci-dessous — la confirmation reste obligatoire.</p>
+        </div>
+
         <h2>Quel appareil&nbsp;?</h2>
         <div class="confirm__cats" role="radiogroup" aria-label="Catégorie d’appareil">
           <button

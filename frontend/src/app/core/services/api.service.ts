@@ -8,7 +8,8 @@ import {
   IssueCode,
   IssueOption,
   MediaUploadResponse,
-  Repairer
+  Repairer,
+  VisionSuggestResponse
 } from '../models';
 
 @Injectable({ providedIn: 'root' })
@@ -21,6 +22,10 @@ export class ApiService {
     const form = new FormData();
     form.append('file', file);
     return this.http.post<MediaUploadResponse>(`${this.base}/api/media`, form);
+  }
+
+  suggestDiagnosis(mediaId: string): Observable<VisionSuggestResponse> {
+    return this.http.post<VisionSuggestResponse>(`${this.base}/api/diagnoses/suggest`, { mediaId });
   }
 
   getIssues(category: ApplianceCategory): Observable<IssueOption[]> {

@@ -227,6 +227,45 @@ h1 {
   animation: rise 0.45s var(--ease) both;
 }
 
+.suggest {
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.05rem;
+  border-radius: var(--radius-sm);
+  background: rgba(12, 124, 116, 0.08);
+  border: 1px solid rgba(12, 124, 116, 0.18);
+  display: grid;
+  gap: 0.25rem;
+}
+
+.suggest__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.suggest strong {
+  font-size: 1.05rem;
+}
+
+.suggest span,
+.suggest em,
+.suggest__note {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.suggest em {
+  font-style: normal;
+  color: var(--ink-faint);
+}
+
+.suggest__note {
+  margin-top: 0.35rem;
+  font-weight: 600;
+}
+
 .confirm h2 {
   font-size: 1.15rem;
   margin: 0 0 0.75rem;
