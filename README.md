@@ -90,6 +90,42 @@ Photo → Suggestion IA → Confirmation → Verdict € → Réparateurs
 - Tutoriels DIY
 - Couverture de toutes les catégories d’appareils
 
+## Décisions techniques & produit
+
+Ces choix ont été **arbitrés manuellement** (périmètre MVP, trade-offs, cohérence du monorepo) — l’IA a servi d’accélérateur d’implémentation, pas de décideur.
+
+### Architecture
+
+| Décision | Choix retenu | Pourquoi / alternative écartée |
+|----------|--------------|--------------------------------|
+| Style applicatif | **Microservices** Maven + gateway | Séparation claire des bounded contexts ; monolithe reporté |
+| Orchestration | **Frontend** (upload → suggest → diagnose → repairers) | Simple pour un MVP ; pas de BFF / saga |
+| Entrée API | **Spring Cloud Gateway** (:8090) | CORS + routage unique ; le front ne parle qu’à la gateway |
+| Données | **1 Postgres DB par service** | Database-per-service ; pas de DB partagée |
+| Infra locale | **Docker Compose**, URLs fixes | Pas d’Eureka / Kafka en v1 |
+| Ports locaux | Gateway **8090**, Postgres **5434** | Éviter les conflits avec d’autres projets locaux |
+
+### Diagnostic & vision
+
+| Décision | Choix retenu | Pourquoi / alternative écartée |
+|----------|--------------|--------------------------------|
+| Source de vérité | **Confirmation utilisateur** (catégorie + panne) | Évite une estimation trompeuse si l’IA se trompe |
+| Vision IA | **Suggestion seulement** (`/suggest`), derrière confirmation | Préremplit l’UI ; jamais le verdict final |
+| Providers vision | `mock` (défaut) · `openai` · `off` | Mock sans clé pour itérer ; OpenAI optionnel |
+| Pricing | **Grille `IssueCode`** + règle 70 % mid-repair | Pas de prix aléatoire / mock vision |
+
+### Compte utilisateur
+
+| Décision | Choix retenu | Pourquoi / alternative écartée |
+|----------|--------------|--------------------------------|
+| Obligation du compte | **Optionnel** | Ne pas freiner le parcours « 30 secondes » |
+| Contenu du compte | **Profil + historique** des passeports | Revenir / retrouver ses diagnostics |
+| Email dès v1 | **Confirm inscription + reset mdp** | Compte crédible sans reporter la confiance |
+| Auth | **`auth-service` maison** (JWT + refresh + BCrypt) | Cohérent avec le monorepo Spring ; Keycloak / Auth0 trop lourds pour ce MVP |
+| OAuth | **Reporté** | Hors périmètre v1 |
+
+Détail cadrage : [`docs/02-architecture.md`](docs/02-architecture.md), [`docs/05-ai-vision-branch.md`](docs/05-ai-vision-branch.md), [`docs/06-compte-utilisateur.md`](docs/06-compte-utilisateur.md).
+
 ## Stack
 
 | Couche | Techno |
