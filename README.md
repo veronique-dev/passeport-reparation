@@ -2,6 +2,8 @@
 
 MVP d’aide à la décision quand un appareil électroménager tombe en panne : une photo suffit pour savoir si ça vaut le coup de réparer, et où contacter un réparateur local.
 
+**Slogan :** *Répare d’abord. Achète ensuite.*
+
 ## Problème
 
 Un objet casse. On ne sait ni si la réparation est rentable, ni où aller. Par défaut, on jette et on rachète.
@@ -10,9 +12,10 @@ Un objet casse. On ne sait ni si la réparation est rentable, ni où aller. Par 
 
 En ~30 secondes, à partir d’une photo :
 
-1. **Diagnostic IA** — identification de l’objet et de la panne probable
+1. **Suggestion + confirmation** — catégorie et panne (IA optionnelle, confirmation manuelle obligatoire)
 2. **Estimation réparer vs remplacer** — fourchette de prix pour déclencher la décision
 3. **Annuaire local** — réparateurs à proximité, contact en un clic
+4. **Compte optionnel** — historique des passeports pour y revenir plus tard
 
 ## Fonctionnalités MVP
 
@@ -38,6 +41,14 @@ En ~30 secondes, à partir d’une photo :
 - Contact en un clic (téléphone / email / WhatsApp)
 - Pas de marketplace, pas de réservation intégrée, pas de paiement
 
+### 4. Compte utilisateur (optionnel)
+
+- Inscription email + mot de passe, confirmation par email
+- Connexion / déconnexion, profil éditable
+- Mot de passe oublié / réinitialisation
+- Historique **Mes passeports** (diagnostics rattachés au compte)
+- Parcours anonyme **toujours possible** — le compte n’est jamais obligatoire
+
 ## User stories
 
 Documentation PO / architecture / QA :
@@ -46,6 +57,7 @@ Documentation PO / architecture / QA :
 - [`docs/03-user-stories.md`](docs/03-user-stories.md)
 - [`docs/04-plan-de-test.md`](docs/04-plan-de-test.md)
 - [`docs/05-ai-vision-branch.md`](docs/05-ai-vision-branch.md) — suggestion IA derrière confirmation
+- [`docs/06-compte-utilisateur.md`](docs/06-compte-utilisateur.md) — compte optionnel + historique
 - [`product/user-stories-mvp.json`](product/user-stories-mvp.json)
 - [`product/user-stories-mvp.csv`](product/user-stories-mvp.csv)
 - [`product/test-matrix.json`](product/test-matrix.json)
@@ -54,7 +66,7 @@ Documentation PO / architecture / QA :
 
 ```bash
 # Unitaires
-mvn -pl services/diagnosis-service,services/media-service,services/repairer-service -am test
+mvn -pl services/auth-service,services/diagnosis-service,services/media-service,services/repairer-service -am test
 
 # E2E (stack Docker requise sur :8090)
 docker compose up -d
@@ -64,12 +76,14 @@ mvn -pl e2e-tests -Pe2e test -De2e.base.url=http://localhost:8090
 ## Parcours utilisateur
 
 ```
-Photo → Suggestion IA → Confirmation catégorie/panne → Verdict € → Contacter un réparateur
+Photo → Suggestion IA → Confirmation → Verdict € → Réparateurs
+         ↘ (optionnel) Compte → Mes passeports
 ```
 
 ## Hors scope (v1)
 
-- Compte utilisateur obligatoire
+- Compte utilisateur **obligatoire**
+- OAuth (Google / Apple)
 - Marketplace / matching temps réel
 - Devis en ligne et paiement
 - Suivi de réparation
@@ -82,6 +96,8 @@ Photo → Suggestion IA → Confirmation catégorie/panne → Verdict € → Co
 |--------|--------|
 | Frontend | Angular 16 |
 | Backend | Java 21, Spring Boot 3.3, Maven |
+| Auth | Spring Security, JWT + refresh, BCrypt |
+| Email | SMTP / Mailhog (local) |
 | Base de données | PostgreSQL 16 (DB par service) |
 | Conteneurs | Docker / Docker Compose |
 | Architecture | Microservices |
@@ -91,9 +107,10 @@ Photo → Suggestion IA → Confirmation catégorie/panne → Verdict € → Co
 | Service | Port | Responsabilité |
 |---------|------|----------------|
 | **gateway** | 8090 | Entrée unique, routage, CORS |
-| **diagnosis-service** | 8081 | Suggestion vision + confirmation catégorie/panne + estimation + verdict |
+| **diagnosis-service** | 8081 | Suggestion vision + confirmation + estimation + historique `/mine` |
 | **repairer-service** | 8082 | Annuaire curaté, filtre catégorie / zone |
 | **media-service** | 8083 | Upload / stockage local des photos |
+| **auth-service** | 8084 | Compte, JWT, confirm email, reset mdp |
 | **frontend** | 4200 (dev) / 4201 (Docker) | SPA Angular |
 
 ```
@@ -101,6 +118,7 @@ passeport-reparation/
 ├── common/                 # DTOs partagés
 ├── services/
 │   ├── gateway/
+│   ├── auth-service/
 │   ├── diagnosis-service/
 │   ├── repairer-service/
 │   └── media-service/
@@ -109,7 +127,7 @@ passeport-reparation/
 └── docker-compose.yml
 ```
 
-**Hors scope infra v1** : Eureka, Kafka, auth — Compose + URLs fixes.
+**Infra locale :** Compose + URLs fixes (pas d’Eureka / Kafka).
 
 ## Démarrage rapide
 
@@ -117,25 +135,36 @@ passeport-reparation/
 
 - Java 21, Maven 3.9+
 - Node 18+, Angular CLI 16
-- Docker (optionnel mais recommandé pour Postgres)
+- Docker (optionnel mais recommandé pour Postgres + Mailhog)
 
-### 1. Base de données
+### 1. Variables d’environnement
+
+Copier [`.env.example`](.env.example) vers `.env` si besoin (`JWT_SECRET`, vision, mail).
+
+### 2. Base de données
 
 ```bash
-docker compose up -d postgres
-# Postgres exposé sur le port 5434 (5433 est souvent pris par d’autres projets)
+docker compose up -d postgres mailhog
+# Postgres :5434 · Mailhog UI : http://localhost:8025 · SMTP :1025
 ```
 
-### 2. Backend
+Si le volume Postgres existait **avant** `auth_db` :
+
+```bash
+docker compose exec postgres psql -U passeport -c "CREATE DATABASE auth_db;"
+```
+
+### 3. Backend
 
 ```bash
 export JAVA_HOME=$(/usr/libexec/java_home -v 21 2>/dev/null || echo "/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home")
-mvn -pl services/media-service,services/diagnosis-service,services/repairer-service,services/gateway -am spring-boot:run
+mvn -pl services/auth-service,services/media-service,services/diagnosis-service,services/repairer-service,services/gateway -am spring-boot:run
 ```
 
 Ou lancer chaque service dans un terminal :
 
 ```bash
+mvn -pl services/auth-service -am spring-boot:run
 mvn -pl services/media-service -am spring-boot:run
 mvn -pl services/diagnosis-service -am spring-boot:run
 mvn -pl services/repairer-service -am spring-boot:run
@@ -144,7 +173,7 @@ mvn -pl services/gateway -am spring-boot:run
 
 API via gateway : `http://localhost:8090`
 
-### 3. Frontend
+### 4. Frontend
 
 ```bash
 cd frontend && npm install && npm start
@@ -160,18 +189,29 @@ docker compose up --build
 
 - Frontend : http://localhost:4201  
 - API : http://localhost:8090  
+- Mailhog : http://localhost:8025  
 
 ## API (via gateway)
 
-| Méthode | Chemin | Description |
-|---------|--------|-------------|
-| `POST` | `/api/media` | Upload photo (`multipart/form-data`, champ `file`) |
-| `GET` | `/api/media/{id}` | Télécharger la photo |
-| `POST` | `/api/diagnoses/suggest` | `{ "mediaId" }` → suggestion IA (catégorie / panne) |
-| `GET` | `/api/diagnoses/issues?category=OVEN` | Liste des pannes / prix pour une catégorie |
-| `POST` | `/api/diagnoses` | `{ "mediaId", "category", "issueCode?" }` → estimation |
-| `GET` | `/api/diagnoses/{id}` | Relire un diagnostic |
-| `GET` | `/api/repairers?category=WASHING_MACHINE&city=Lyon` | Annuaire |
+| Méthode | Chemin | Description | Auth |
+|---------|--------|-------------|------|
+| `POST` | `/api/auth/register` | Créer un compte | public |
+| `GET` | `/api/auth/confirm?token=` | Confirmer l’email | public |
+| `POST` | `/api/auth/login` | Connexion → JWT + refresh | public |
+| `POST` | `/api/auth/refresh` | Renouveler les tokens | refresh |
+| `POST` | `/api/auth/logout` | Révoquer le refresh | public |
+| `POST` | `/api/auth/forgot-password` | Demander un reset | public |
+| `POST` | `/api/auth/reset-password` | Nouveau mot de passe | public |
+| `GET` | `/api/auth/me` | Profil | Bearer |
+| `PATCH` | `/api/auth/me` | Modifier le profil | Bearer |
+| `POST` | `/api/media` | Upload photo (`multipart`, champ `file`) | public |
+| `GET` | `/api/media/{id}` | Télécharger la photo | public |
+| `POST` | `/api/diagnoses/suggest` | Suggestion IA | public |
+| `GET` | `/api/diagnoses/issues?category=OVEN` | Catalogue pannes | public |
+| `POST` | `/api/diagnoses` | Estimation (rattache `userId` si JWT) | public / Bearer |
+| `GET` | `/api/diagnoses/mine` | Historique de l’utilisateur | Bearer |
+| `GET` | `/api/diagnoses/{id}` | Relire un diagnostic | public |
+| `GET` | `/api/repairers?category=&city=Lyon` | Annuaire | public |
 
 Le diagnostic s’appuie sur la **confirmation utilisateur** (catégorie + panne) et une grille de prix. La suggestion IA (`/suggest`) préremplit l’UI mais n’est jamais la source de vérité.
 
@@ -183,7 +223,27 @@ Le diagnostic s’appuie sur la **confirmation utilisateur** (catégorie + panne
 | `openai` | OpenAI Vision (`OPENAI_API_KEY` requis) |
 | `off` | Pas de suggestion — choix 100 % manuel |
 
-Voir [`.env.example`](.env.example) et [`docs/05-ai-vision-branch.md`](docs/05-ai-vision-branch.md).
+### Compte & email
+
+| Variable | Rôle |
+|----------|------|
+| `JWT_SECRET` | Secret partagé auth + diagnosis (min. 32 caractères) |
+| `MAIL_ENABLED` | `true` en Docker (Mailhog) · `false` → liens loggés |
+| `APP_FRONTEND_URL` | Base des liens email (confirm / reset) |
+
+Voir [`.env.example`](.env.example), [`docs/05-ai-vision-branch.md`](docs/05-ai-vision-branch.md) et [`docs/06-compte-utilisateur.md`](docs/06-compte-utilisateur.md).
+
+### Pages front utiles
+
+| Route | Rôle |
+|-------|------|
+| `/` | Parcours photo / confirmation |
+| `/inscription` | Créer un compte |
+| `/connexion` | Se connecter |
+| `/mot-de-passe-oublie` | Demander un reset |
+| `/confirmer-email` | Lien reçu par email |
+| `/compte` | Profil |
+| `/mes-passeports` | Historique |
 
 ### Collection Postman
 
@@ -198,10 +258,10 @@ Variable `baseUrl` = `http://localhost:8090`. Pour l’upload, sélectionner `sa
 
 | Version | Contenu |
 |---------|---------|
-| **MVP** | Photo → suggestion IA + confirmation → estimation → annuaire |
-| **v1.1** | Tutoriels DIY si panne simple |
-| **v1.2** | Élargissement des catégories / zones |
-| **v2** | Compte utilisateur, suivi, partenariats renforcés |
+| **MVP** | Photo → suggestion + confirmation → estimation → annuaire |
+| **v1.1** | Compte optionnel, confirm email, historique Mes passeports |
+| **v1.2** | Tutoriels DIY / élargissement catégories & zones |
+| **v2** | OAuth, suivi réparation, partenariats renforcés |
 
 ## Licence
 
