@@ -1,7 +1,7 @@
 {
   "project": "Passeport de réparation",
   "version": "MVP 1.0",
-  "levels": ["unit", "manual-api", "manual-ui"],
+  "levels": ["unit", "e2e", "manual-api", "manual-ui"],
   "coverage": [
     {
       "storyId": "US-01",
@@ -11,7 +11,9 @@
         "MediaStorageServiceTest.us01_rejectsEmptyFile",
         "MediaStorageServiceTest.us01_rejectsUnsupportedContentType",
         "MediaStorageServiceTest.us01_throwsWhenMediaNotFound",
-        "MediaStorageServiceTest.us01_rejectsPathTraversalMediaId"
+        "MediaStorageServiceTest.us01_rejectsPathTraversalMediaId",
+        "MvpAcceptanceTest.us01_uploadMedia",
+        "MvpAcceptanceTest.us01_rejectsUnsupportedType"
       ],
       "manual": ["UI import JPEG/PNG/WEBP", "POST /api/media"]
     },
@@ -27,7 +29,8 @@
       "automated": [
         "PricingCatalogTest.us03_listsIssuesForOven",
         "PricingCatalogTest.us03_returnsEmptyForUnsupported",
-        "DiagnosisServiceTest.us03_listsIssuesViaService"
+        "DiagnosisServiceTest.us03_listsIssuesViaService",
+        "MvpAcceptanceTest.us03_listOvenIssues"
       ],
       "manual": ["UI liste symptômes", "GET /api/diagnoses/issues"]
     },
@@ -35,7 +38,8 @@
       "storyId": "US-04",
       "title": "Déclarer un appareil hors périmètre",
       "automated": [
-        "DiagnosisServiceTest.us04_unsupportedReturnsNoEstimate"
+        "DiagnosisServiceTest.us04_unsupportedReturnsNoEstimate",
+        "MvpAcceptanceTest.us04_unsupportedCategory"
       ],
       "manual": ["UI choix Autre", "POST category=UNSUPPORTED"]
     },
@@ -47,7 +51,9 @@
         "PricingCatalogTest.us05_fallsBackToUnknownWhenIssueCodeMissing",
         "PricingCatalogTest.us05_rejectsMismatchedIssueAndCategory",
         "DiagnosisServiceTest.us05_returnsCostEstimateForDrainPump",
-        "DiagnosisServiceTest.us05_rejectsInvalidIssueForCategory"
+        "DiagnosisServiceTest.us05_rejectsInvalidIssueForCategory",
+        "MvpAcceptanceTest.us05_us06_us07_ovenDoorSealEstimate",
+        "MvpAcceptanceTest.us05_electronicBoardMoreExpensiveThanSeal"
       ],
       "manual": ["Comparer joint vs carte électronique"]
     },
@@ -58,7 +64,8 @@
         "VerdictCalculatorTest.us06_keepsCatalogVerdictWhenRatioBelowThreshold",
         "VerdictCalculatorTest.us06_forcesReplaceWhenMidExceedsSeventyPercentOfReplacement",
         "VerdictCalculatorTest.us06_keepsArbitrateForElectronicBoardInCatalog",
-        "DiagnosisServiceTest.us06_and_us07_persistVerdictAndDisclaimer"
+        "DiagnosisServiceTest.us06_and_us07_persistVerdictAndDisclaimer",
+        "MvpAcceptanceTest.us05_us06_us07_ovenDoorSealEstimate"
       ],
       "manual": ["UI badge verdict"]
     },
@@ -67,7 +74,8 @@
       "title": "Afficher le disclaimer d'estimation",
       "automated": [
         "DiagnosisServiceTest.us06_and_us07_persistVerdictAndDisclaimer",
-        "DiagnosisServiceTest.us04_unsupportedReturnsNoEstimate"
+        "DiagnosisServiceTest.us04_unsupportedReturnsNoEstimate",
+        "MvpAcceptanceTest.us05_us06_us07_ovenDoorSealEstimate"
       ],
       "manual": ["UI disclaimer visible"]
     },
@@ -77,7 +85,8 @@
       "automated": [
         "RepairerServiceTest.us08_filtersByCategoryAndMapsContactFields",
         "RepairerServiceTest.us08_returnsEmptyListWhenNoRepairerMatches",
-        "RepairerServiceTest.us08_sortsByDistanceWhenCoordinatesProvided"
+        "RepairerServiceTest.us08_sortsByDistanceWhenCoordinatesProvided",
+        "MvpAcceptanceTest.us08_listRepairersForOvenInLyon"
       ],
       "manual": ["UI liste Lyon", "GET /api/repairers"]
     },
@@ -85,14 +94,17 @@
       "storyId": "US-09",
       "title": "Contacter un réparateur en un clic",
       "automated": [
-        "RepairerServiceTest.us08_filtersByCategoryAndMapsContactFields"
+        "RepairerServiceTest.us08_filtersByCategoryAndMapsContactFields",
+        "MvpAcceptanceTest.us09_repairersExposeContactChannels"
       ],
       "manual": ["tel:", "mailto:", "wa.me"]
     },
     {
       "storyId": "US-10",
       "title": "Consulter mon passeport de réparation",
-      "automated": [],
+      "automated": [
+        "MvpAcceptanceTest.us10_getDiagnosisById"
+      ],
       "manual": ["UI /resultat", "redirection sans session"]
     },
     {

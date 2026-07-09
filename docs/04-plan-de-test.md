@@ -16,22 +16,22 @@ Valider le parcours **Photo → Catégorie + panne → Verdict € → Contact r
 | **Unitaire** | Media, diagnosis, repairer (Mockito / filesystem temp) | `services/*/src/test` |
 | **API manuelle** | Curl / Postman via gateway | `http://localhost:8090` |
 | **UI manuelle** | Parcours Angular | `http://localhost:4200` |
-| **E2E auto** | À venir (REST Assured via gateway) | hors scope immédiat |
+| **E2E auto** | REST Assured via gateway (`-Pe2e`) | `e2e-tests/` |
 
 ## Matrice User Story → Tests
 
 | US | Titre | Auto | Manuel |
 |----|-------|------|--------|
-| US-01 | Importer une photo | `MediaStorageServiceTest` | UI + `POST /api/media` |
+| US-01 | Importer une photo | `MediaStorageServiceTest`, `MvpAcceptanceTest.us01_*` | UI + `POST /api/media` |
 | US-02 | Confirmer catégorie | — | UI |
-| US-03 | Sélectionner panne | `PricingCatalogTest`, `DiagnosisServiceTest.us03_*` | UI + `GET /api/diagnoses/issues` |
-| US-04 | Hors périmètre | `DiagnosisServiceTest.us04_*` | UI « Autre » |
-| US-05 | Estimation coût | `PricingCatalogTest`, `DiagnosisServiceTest.us05_*` | API + UI |
-| US-06 | Verdict | `VerdictCalculatorTest`, `DiagnosisServiceTest.us06_*` | UI |
-| US-07 | Disclaimer | `DiagnosisServiceTest.us06_and_us07_*` | UI |
-| US-08 | Liste réparateurs | `RepairerServiceTest` | UI + `GET /api/repairers` |
-| US-09 | Contact 1 clic | — | UI (tel / mailto / wa.me) |
-| US-10 | Écran passeport | — | UI `/resultat` |
+| US-03 | Sélectionner panne | `PricingCatalogTest`, `DiagnosisServiceTest.us03_*`, `MvpAcceptanceTest.us03_*` | UI + `GET /api/diagnoses/issues` |
+| US-04 | Hors périmètre | `DiagnosisServiceTest.us04_*`, `MvpAcceptanceTest.us04_*` | UI « Autre » |
+| US-05 | Estimation coût | `PricingCatalogTest`, `DiagnosisServiceTest.us05_*`, `MvpAcceptanceTest.us05_*` | API + UI |
+| US-06 | Verdict | `VerdictCalculatorTest`, `DiagnosisServiceTest.us06_*`, `MvpAcceptanceTest.us05_us06_us07_*` | UI |
+| US-07 | Disclaimer | `DiagnosisServiceTest.us06_and_us07_*`, `MvpAcceptanceTest.us05_us06_us07_*` | UI |
+| US-08 | Liste réparateurs | `RepairerServiceTest`, `MvpAcceptanceTest.us08_*` | UI + `GET /api/repairers` |
+| US-09 | Contact 1 clic | `RepairerServiceTest`, `MvpAcceptanceTest.us09_*` | UI (tel / mailto / wa.me) |
+| US-10 | Écran passeport | `MvpAcceptanceTest.us10_*` | UI `/resultat` |
 | US-11 | Nouvelle photo | — | UI |
 
 ## Cas de test manuels (checklist)
@@ -84,7 +84,8 @@ curl -s 'http://localhost:8090/api/repairers?category=OVEN&city=Lyon' | jq
 
 ## Critères de sortie QA (MVP)
 
-- [ ] Tous les tests unitaires diagnosis-service verts
+- [ ] Tous les tests unitaires diagnosis/media/repairer verts
+- [ ] Suite E2E `e2e-tests` verte via gateway `:8090`
 - [ ] Smoke UI parcours heureux OK
 - [ ] Cas « Autre » OK (pas de faux four)
 - [ ] Disclaimer visible
@@ -98,6 +99,10 @@ curl -s 'http://localhost:8090/api/repairers?category=OVEN&city=Lyon' | jq
 export JAVA_HOME="/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home"
 mvn -pl services/diagnosis-service,services/media-service,services/repairer-service -am test
 
+# E2E via gateway (stack Docker requise)
+docker compose up -d
+mvn -pl e2e-tests -Pe2e test -De2e.base.url=http://localhost:8090
+
 # Stack
 docker compose up -d
 ```
@@ -106,4 +111,4 @@ docker compose up -d
 
 - Pas d’IA vision : la photo n’identifie pas l’objet (comportement attendu MVP)
 - Zone géographique figée à Lyon
-- Pas de suite E2E automatisée encore
+- US-02 / US-11 restent manuels (UI)

@@ -48,6 +48,17 @@ Documentation PO / architecture / QA :
 - [`product/user-stories-mvp.csv`](product/user-stories-mvp.csv)
 - [`product/test-matrix.json`](product/test-matrix.json)
 
+### Tests
+
+```bash
+# Unitaires
+mvn -pl services/diagnosis-service,services/media-service,services/repairer-service -am test
+
+# E2E (stack Docker requise sur :8090)
+docker compose up -d
+mvn -pl e2e-tests -Pe2e test -De2e.base.url=http://localhost:8090
+```
+
 ## Parcours utilisateur
 
 ```
