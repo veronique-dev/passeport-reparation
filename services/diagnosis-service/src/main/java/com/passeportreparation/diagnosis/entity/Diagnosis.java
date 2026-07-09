@@ -50,6 +50,9 @@ public class Diagnosis {
     @Builder.Default
     private boolean userConfirmed = true;
 
+    /** Null = parcours anonyme. */
+    private UUID userId;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 

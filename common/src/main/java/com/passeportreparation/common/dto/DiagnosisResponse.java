@@ -27,4 +27,5 @@ public class DiagnosisResponse {
     private String disclaimer;
     private boolean supported;
     private boolean userConfirmed;
+    private UUID userId;
 }

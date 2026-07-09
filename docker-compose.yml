@@ -27,6 +27,32 @@ services:
       - media_data:/data/media
     depends_on: []
 
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/auth_db
+      SPRING_DATASOURCE_USERNAME: passeport
+      SPRING_DATASOURCE_PASSWORD: passeport123
+      JWT_SECRET: ${JWT_SECRET:-passeport-reparation-dev-secret-change-me-32chars-min}
+      APP_FRONTEND_URL: ${APP_FRONTEND_URL:-http://localhost:4201}
+      MAIL_ENABLED: ${MAIL_ENABLED:-true}
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_FROM: noreply@passeport-reparation.local
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
+
   diagnosis-service:
     build:
       context: .
@@ -40,6 +66,7 @@ services:
       OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com}
       OPENAI_VISION_MODEL: ${OPENAI_VISION_MODEL:-gpt-4o-mini}
       MEDIA_SERVICE_URL: http://media-service:8083
+      JWT_SECRET: ${JWT_SECRET:-passeport-reparation-dev-secret-change-me-32chars-min}
     depends_on:
       postgres:
         condition: service_healthy
@@ -63,10 +90,12 @@ services:
     ports:
       - "8090:8080"
     environment:
+      AUTH_SERVICE_URL: http://auth-service:8084
       MEDIA_SERVICE_URL: http://media-service:8083
       DIAGNOSIS_SERVICE_URL: http://diagnosis-service:8081
       REPAIRER_SERVICE_URL: http://repairer-service:8082
     depends_on:
+      - auth-service
       - media-service
       - diagnosis-service
       - repairer-service

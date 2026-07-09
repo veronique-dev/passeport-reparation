@@ -1,0 +1,27 @@
+<section class="passports container">
+  <header class="passports__head">
+    <p class="passports__eyebrow">Historique</p>
+    <h1>Mes passeports</h1>
+    <p>Tes diagnostics enregistrés — rouvre-les quand tu veux.</p>
+  </header>
+
+  <p *ngIf="loading">Chargement…</p>
+  <p class="passports__error" *ngIf="error" role="alert">{{ error }}</p>
+
+  <ul class="passports__list" *ngIf="!loading && !error">
+    <li *ngFor="let item of items">
+      <button type="button" class="passport-row" (click)="open(item)">
+        <div>
+          <strong>{{ item.applianceLabel }}</strong>
+          <span>{{ item.probableIssue }}</span>
+        </div>
+        <em>{{ verdictLabel(item.verdict) }}</em>
+      </button>
+    </li>
+  </ul>
+
+  <p class="passports__empty" *ngIf="!loading && !error && !items.length">
+    Aucun passeport pour l’instant.
+    <a routerLink="/">Faire une estimation</a>
+  </p>
+</section>

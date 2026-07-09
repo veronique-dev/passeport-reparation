@@ -1,0 +1,12 @@
+<section class="auth container">
+  <header class="auth__head">
+    <p class="auth__eyebrow">Compte</p>
+    <h1>Confirmation email</h1>
+  </header>
+  <p *ngIf="loading">Confirmation en cours…</p>
+  <p class="auth__ok" *ngIf="success">{{ success }}</p>
+  <p class="auth__error" *ngIf="error" role="alert">{{ error }}</p>
+  <p class="auth__links">
+    <a routerLink="/connexion">Se connecter</a>
+  </p>
+</section>

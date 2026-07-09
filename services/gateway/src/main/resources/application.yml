@@ -17,11 +17,16 @@ spring:
               - GET
               - POST
               - PUT
+              - PATCH
               - DELETE
               - OPTIONS
             allowedHeaders: "*"
             allowCredentials: true
       routes:
+        - id: auth-service
+          uri: ${AUTH_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/auth/**
         - id: media-service
           uri: ${MEDIA_SERVICE_URL:http://localhost:8083}
           predicates:

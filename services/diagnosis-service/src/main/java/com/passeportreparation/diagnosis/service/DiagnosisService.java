@@ -38,7 +38,7 @@ public class DiagnosisService {
     }
 
     @Transactional
-    public DiagnosisResponse diagnose(DiagnosisRequest request) {
+    public DiagnosisResponse diagnose(DiagnosisRequest request, UUID userId) {
         ApplianceCategory category = request.getCategory();
         boolean supported = category != null && category != ApplianceCategory.UNSUPPORTED;
 
@@ -53,6 +53,7 @@ public class DiagnosisService {
                     .verdict(null)
                     .supported(false)
                     .userConfirmed(true)
+                    .userId(userId)
                     .build();
             return toResponse(repository.save(entity), null);
         }
@@ -77,6 +78,7 @@ public class DiagnosisService {
                 .verdict(verdict)
                 .supported(true)
                 .userConfirmed(true)
+                .userId(userId)
                 .build();
 
         return toResponse(repository.save(entity), estimate);
@@ -86,16 +88,26 @@ public class DiagnosisService {
     public DiagnosisResponse getById(UUID id) {
         Diagnosis entity = repository.findById(id)
                 .orElseThrow(() -> new DiagnosisNotFoundException(id));
-        CostEstimateDto estimate = null;
-        if (entity.isSupported() && entity.getRepairLow() != null) {
-            estimate = CostEstimateDto.builder()
-                    .repairLow(entity.getRepairLow())
-                    .repairHigh(entity.getRepairHigh())
-                    .replacementApprox(entity.getReplacementApprox())
-                    .currency("EUR")
-                    .build();
+        return toResponse(entity, estimateOf(entity));
+    }
+
+    @Transactional(readOnly = true)
+    public List<DiagnosisResponse> listMine(UUID userId) {
+        return repository.findByUserIdOrderByCreatedAtDesc(userId).stream()
+                .map(entity -> toResponse(entity, estimateOf(entity)))
+                .toList();
+    }
+
+    private static CostEstimateDto estimateOf(Diagnosis entity) {
+        if (!entity.isSupported() || entity.getRepairLow() == null) {
+            return null;
         }
-        return toResponse(entity, estimate);
+        return CostEstimateDto.builder()
+                .repairLow(entity.getRepairLow())
+                .repairHigh(entity.getRepairHigh())
+                .replacementApprox(entity.getReplacementApprox())
+                .currency("EUR")
+                .build();
     }
 
     private static DiagnosisResponse toResponse(Diagnosis entity, CostEstimateDto estimate) {
@@ -112,6 +124,7 @@ public class DiagnosisService {
                 .disclaimer(DISCLAIMER)
                 .supported(entity.isSupported())
                 .userConfirmed(entity.isUserConfirmed())
+                .userId(entity.getUserId())
                 .build();
     }
 }

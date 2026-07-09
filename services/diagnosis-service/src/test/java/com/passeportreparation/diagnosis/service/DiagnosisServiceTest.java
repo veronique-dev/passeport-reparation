@@ -51,7 +51,7 @@ class DiagnosisServiceTest {
                 .category(ApplianceCategory.UNSUPPORTED)
                 .build();
 
-        DiagnosisResponse response = service.diagnose(request);
+        DiagnosisResponse response = service.diagnose(request, null);
 
         assertThat(response.isSupported()).isFalse();
         assertThat(response.getEstimate()).isNull();
@@ -69,7 +69,7 @@ class DiagnosisServiceTest {
                 .issueCode(IssueCode.WM_DRAIN_PUMP)
                 .build();
 
-        DiagnosisResponse response = service.diagnose(request);
+        DiagnosisResponse response = service.diagnose(request, null);
 
         assertThat(response.isSupported()).isTrue();
         assertThat(response.getApplianceLabel()).isEqualTo("Lave-linge");
@@ -89,7 +89,7 @@ class DiagnosisServiceTest {
                 .issueCode(IssueCode.OV_DOOR_SEAL)
                 .build();
 
-        DiagnosisResponse response = service.diagnose(request);
+        DiagnosisResponse response = service.diagnose(request, null);
 
         assertThat(response.getVerdict()).isEqualTo(RepairVerdict.REPAIR);
         assertThat(response.getDisclaimer()).isEqualTo(DiagnosisService.DISCLAIMER);
@@ -108,7 +108,7 @@ class DiagnosisServiceTest {
                 .issueCode(IssueCode.WM_DRAIN_PUMP)
                 .build();
 
-        assertThatThrownBy(() -> service.diagnose(request))
+        assertThatThrownBy(() -> service.diagnose(request, null))
                 .isInstanceOf(InvalidDiagnosisRequestException.class)
                 .hasMessageContaining("Type de panne invalide");
     }

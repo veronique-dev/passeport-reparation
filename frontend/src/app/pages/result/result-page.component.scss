@@ -256,6 +256,22 @@
   color: var(--accent-deep);
 }
 
+.result__save {
+  margin-top: 0.35rem;
+  color: var(--ink-faint);
+  font-size: 0.88rem;
+}
+
+.result__save a {
+  color: var(--accent-deep);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.result__save a:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 860px) {
   .result__layout {
     grid-template-columns: 1fr;
