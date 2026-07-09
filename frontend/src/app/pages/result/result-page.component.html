@@ -68,7 +68,15 @@
   </section>
 
   <div class="result__footer">
-    <p class="result__tagline">Répare d’abord. Achète ensuite.</p>
+    <div>
+      <p class="result__tagline">Répare d’abord. Achète ensuite.</p>
+      <p class="result__save" *ngIf="!diagnosis?.userId">
+        <a routerLink="/inscription">Crée un compte</a> pour retrouver ce passeport plus tard.
+      </p>
+      <p class="result__save" *ngIf="diagnosis?.userId">
+        Enregistré dans <a routerLink="/mes-passeports">Mes passeports</a>.
+      </p>
+    </div>
     <button type="button" class="btn btn--ghost" (click)="restart()">Nouvelle photo</button>
   </div>
 </section>

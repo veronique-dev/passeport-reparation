@@ -4,7 +4,18 @@
       <span class="mark__glyph" aria-hidden="true"></span>
       <span class="mark__text">Passeport</span>
     </a>
-    <p class="shell-top__meta" aria-hidden="true">Répare d’abord · Achète ensuite</p>
+
+    <nav class="shell-top__nav" aria-label="Compte">
+      <ng-container *ngIf="user$ | async as user; else guest">
+        <a routerLink="/mes-passeports">Mes passeports</a>
+        <a routerLink="/compte">{{ user.firstName || 'Mon compte' }}</a>
+        <button type="button" class="shell-top__linkbtn" (click)="logout()">Quitter</button>
+      </ng-container>
+      <ng-template #guest>
+        <a routerLink="/connexion">Connexion</a>
+        <a routerLink="/inscription" class="shell-top__cta">Créer un compte</a>
+      </ng-template>
+    </nav>
   </div>
 </header>
 <main class="shell-main">

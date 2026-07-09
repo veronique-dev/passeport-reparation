@@ -1,0 +1,24 @@
+<section class="auth container" *ngIf="user as u">
+  <header class="auth__head">
+    <p class="auth__eyebrow">Mon compte</p>
+    <h1>{{ u.firstName || 'Ton profil' }}</h1>
+    <p>{{ u.email }}</p>
+  </header>
+
+  <form class="auth__form" (ngSubmit)="save()">
+    <label>
+      <span>Prénom</span>
+      <input name="firstName" type="text" [(ngModel)]="firstName" />
+    </label>
+    <p class="auth__ok" *ngIf="message">{{ message }}</p>
+    <p class="auth__error" *ngIf="error" role="alert">{{ error }}</p>
+    <button class="btn btn--primary" type="submit" [disabled]="loading">
+      {{ loading ? 'Enregistrement…' : 'Enregistrer' }}
+    </button>
+  </form>
+
+  <div class="account__actions">
+    <a routerLink="/mes-passeports" class="btn btn--ghost">Mes passeports</a>
+    <button type="button" class="btn btn--ghost" (click)="logout()">Se déconnecter</button>
+  </div>
+</section>

@@ -26,6 +26,8 @@ app:
       model: ${OPENAI_VISION_MODEL:gpt-4o-mini}
   media:
     service-url: ${MEDIA_SERVICE_URL:http://localhost:8083}
+  jwt:
+    secret: ${JWT_SECRET:passeport-reparation-dev-secret-change-me-32chars-min}
 
 springdoc:
   api-docs:

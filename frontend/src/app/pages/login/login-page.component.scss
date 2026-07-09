@@ -1,0 +1,88 @@
+.auth {
+  padding: 2rem 0 3rem;
+  max-width: 28rem;
+  animation: rise 0.55s var(--ease) both;
+}
+
+.auth__eyebrow {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.45rem;
+}
+
+.auth__head h1 {
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+}
+
+.auth__head p {
+  margin-top: 0.55rem;
+  color: var(--ink-soft);
+}
+
+.auth__form {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 0.95rem;
+}
+
+.auth__form label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.auth__form span {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.auth__form input {
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  padding: 0.85rem 0.95rem;
+  font: inherit;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--ink);
+}
+
+.auth__form input:focus {
+  outline: 2px solid rgba(12, 124, 116, 0.35);
+  border-color: var(--accent);
+}
+
+.auth__error {
+  color: var(--danger);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.auth__ok {
+  color: var(--accent-deep);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--ok-soft);
+}
+
+.auth__links {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.auth__links a {
+  color: var(--accent-deep);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth__links a:hover {
+  text-decoration: underline;
+}

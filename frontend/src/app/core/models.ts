@@ -51,6 +51,7 @@ export interface DiagnosisResponse {
   disclaimer: string;
   supported: boolean;
   userConfirmed?: boolean;
+  userId?: string;
 }
 
 export interface Repairer {
@@ -83,4 +84,23 @@ export interface CategoryChoice {
   value: ApplianceCategory;
   label: string;
   hint: string;
+}
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  firstName?: string;
+  emailVerified: boolean;
+}
+
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+  expiresInSeconds: number;
+  user: UserProfile;
+}
+
+export interface MessageResponse {
+  message: string;
 }

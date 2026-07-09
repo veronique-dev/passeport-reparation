@@ -1,0 +1,40 @@
+<section class="auth container">
+  <header class="auth__head">
+    <p class="auth__eyebrow">Compte</p>
+    <h1>Créer un compte</h1>
+    <p>Optionnel — pour garder l’historique de tes passeports.</p>
+  </header>
+
+  <form class="auth__form" (ngSubmit)="submit()" #f="ngForm" *ngIf="!success">
+    <label>
+      <span>Prénom (optionnel)</span>
+      <input name="firstName" type="text" [(ngModel)]="firstName" autocomplete="given-name" />
+    </label>
+    <label>
+      <span>Email</span>
+      <input name="email" type="email" required [(ngModel)]="email" autocomplete="email" />
+    </label>
+    <label>
+      <span>Mot de passe (8+ caractères)</span>
+      <input name="password" type="password" required minlength="8" [(ngModel)]="password" autocomplete="new-password" />
+    </label>
+
+    <p class="auth__error" *ngIf="error" role="alert">{{ error }}</p>
+
+    <button class="btn btn--primary" type="submit" [disabled]="loading || f.invalid">
+      {{ loading ? 'Création…' : 'Créer mon compte' }}
+    </button>
+  </form>
+
+  <ng-container *ngIf="success">
+    <p class="auth__ok">{{ success }}</p>
+    <p class="auth__links">
+      <button type="button" class="btn btn--ghost" (click)="goLogin()">Aller à la connexion</button>
+    </p>
+  </ng-container>
+
+  <p class="auth__links" *ngIf="!success">
+    <a routerLink="/connexion">Déjà un compte ?</a>
+    <a routerLink="/">Continuer sans compte</a>
+  </p>
+</section>

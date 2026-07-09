@@ -66,4 +66,12 @@ export class ApiService {
     }
     return this.http.get<Repairer[]>(`${this.base}/api/repairers`, { params });
   }
+
+  getMyDiagnoses(): Observable<DiagnosisResponse[]> {
+    return this.http.get<DiagnosisResponse[]>(`${this.base}/api/diagnoses/mine`);
+  }
+
+  getDiagnosis(id: string): Observable<DiagnosisResponse> {
+    return this.http.get<DiagnosisResponse>(`${this.base}/api/diagnoses/${id}`);
+  }
 }

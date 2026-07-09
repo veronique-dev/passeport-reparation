@@ -11,6 +11,7 @@ import com.passeportreparation.diagnosis.service.VisionSuggestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,10 +35,19 @@ public class DiagnosisController {
         return visionSuggestService.suggest(request);
     }
 
+    @GetMapping("/mine")
+    public List<DiagnosisResponse> mine(Authentication authentication) {
+        return diagnosisService.listMine((UUID) authentication.getPrincipal());
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public DiagnosisResponse create(@Valid @RequestBody DiagnosisRequest request) {
-        return diagnosisService.diagnose(request);
+    public DiagnosisResponse create(
+            @Valid @RequestBody DiagnosisRequest request,
+            Authentication authentication
+    ) {
+        UUID userId = authentication != null && authentication.getPrincipal() instanceof UUID id ? id : null;
+        return diagnosisService.diagnose(request, userId);
     }
 
     @GetMapping("/{id}")
