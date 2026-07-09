@@ -74,4 +74,8 @@ export class ApiService {
   getDiagnosis(id: string): Observable<DiagnosisResponse> {
     return this.http.get<DiagnosisResponse>(`${this.base}/api/diagnoses/${id}`);
   }
+
+  claimDiagnosis(id: string): Observable<DiagnosisResponse> {
+    return this.http.post<DiagnosisResponse>(`${this.base}/api/diagnoses/${id}/claim`, {});
+  }
 }

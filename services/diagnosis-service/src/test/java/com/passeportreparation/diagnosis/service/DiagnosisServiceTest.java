@@ -113,10 +113,71 @@ class DiagnosisServiceTest {
                 .hasMessageContaining("Type de panne invalide");
     }
 
-    @Test
     void us03_listsIssuesViaService() {
         assertThat(service.listIssues(ApplianceCategory.DISHWASHER))
                 .extracting(i -> i.getCode())
                 .contains(IssueCode.DW_HEATING, IssueCode.DW_UNKNOWN);
+    }
+
+    @Test
+    void us12_claimsAnonymousDiagnosis() {
+        UUID diagnosisId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        Diagnosis entity = Diagnosis.builder()
+                .id(diagnosisId)
+                .mediaId("m")
+                .category(ApplianceCategory.OVEN)
+                .applianceLabel("Four")
+                .issueCode(IssueCode.OV_DOOR_SEAL)
+                .probableIssue("Joint")
+                .supported(true)
+                .userConfirmed(true)
+                .userId(null)
+                .build();
+        when(repository.findById(diagnosisId)).thenReturn(java.util.Optional.of(entity));
+
+        DiagnosisResponse response = service.claim(diagnosisId, userId);
+
+        assertThat(response.getUserId()).isEqualTo(userId);
+        assertThat(entity.getUserId()).isEqualTo(userId);
+        verify(repository).save(entity);
+    }
+
+    @Test
+    void us12_claimIsIdempotentForSameUser() {
+        UUID diagnosisId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        Diagnosis entity = Diagnosis.builder()
+                .id(diagnosisId)
+                .mediaId("m")
+                .category(ApplianceCategory.OVEN)
+                .applianceLabel("Four")
+                .supported(false)
+                .userConfirmed(true)
+                .userId(userId)
+                .build();
+        when(repository.findById(diagnosisId)).thenReturn(java.util.Optional.of(entity));
+
+        DiagnosisResponse response = service.claim(diagnosisId, userId);
+
+        assertThat(response.getUserId()).isEqualTo(userId);
+    }
+
+    @Test
+    void us12_claimRejectsOtherOwner() {
+        UUID diagnosisId = UUID.randomUUID();
+        Diagnosis entity = Diagnosis.builder()
+                .id(diagnosisId)
+                .mediaId("m")
+                .category(ApplianceCategory.OVEN)
+                .applianceLabel("Four")
+                .supported(false)
+                .userConfirmed(true)
+                .userId(UUID.randomUUID())
+                .build();
+        when(repository.findById(diagnosisId)).thenReturn(java.util.Optional.of(entity));
+
+        assertThatThrownBy(() -> service.claim(diagnosisId, UUID.randomUUID()))
+                .isInstanceOf(DiagnosisClaimConflictException.class);
     }
 }
