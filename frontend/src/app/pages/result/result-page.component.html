@@ -1,26 +1,28 @@
 <section class="result container" *ngIf="diagnosis as d">
-  <div class="result__grid">
-    <div class="visual" *ngIf="previewUrl">
-      <img [src]="previewUrl" alt="Photo analysée" />
-    </div>
+  <header class="result__intro">
+    <p class="result__eyebrow">Ton passeport</p>
+    <h1>{{ d.supported ? d.applianceLabel : 'Hors périmètre' }}</h1>
+    <p class="result__issue">{{ d.probableIssue }}</p>
+  </header>
 
-    <div class="panel">
-      <p class="eyebrow">Diagnostic</p>
-      <h1>{{ d.applianceLabel }}</h1>
-      <p class="issue">{{ d.probableIssue }}</p>
+  <div class="result__layout">
+    <figure class="result__visual" *ngIf="previewUrl">
+      <img [src]="previewUrl" alt="Photo analysée" />
+    </figure>
+
+    <article class="passport" [attr.data-verdict]="d.verdict || 'NONE'">
+      <div class="passport__stamp" *ngIf="d.supported">
+        <span>Verdict</span>
+        <strong>{{ verdictLabel(d.verdict) }}</strong>
+      </div>
 
       <ng-container *ngIf="d.supported && d.estimate; else unsupported">
-        <div class="verdict" [attr.data-verdict]="d.verdict">
-          <span>Verdict</span>
-          <strong>{{ verdictLabel(d.verdict) }}</strong>
-        </div>
-
-        <div class="costs">
-          <div>
-            <span>Réparation</span>
+        <div class="passport__grid">
+          <div class="passport__metric">
+            <span>Réparation estimée</span>
             <strong>{{ d.estimate.repairLow }}–{{ d.estimate.repairHigh }} €</strong>
           </div>
-          <div>
+          <div class="passport__metric">
             <span>Remplacement</span>
             <strong>~{{ d.estimate.replacementApprox }} €</strong>
           </div>
@@ -28,36 +30,44 @@
       </ng-container>
 
       <ng-template #unsupported>
-        <p class="unsupported">
+        <p class="passport__unsupported">
           Catégorie non supportée pour l’instant. Le MVP couvre lave-linge, lave-vaisselle et four.
         </p>
       </ng-template>
 
-      <p class="disclaimer">{{ d.disclaimer }}</p>
-    </div>
+      <p class="passport__disclaimer">{{ d.disclaimer }}</p>
+    </article>
   </div>
 
   <section class="repairers" *ngIf="d.supported">
-    <h2>Réparateurs à proximité</h2>
-    <p class="sub">Zone test · Lyon — contact en un clic</p>
+    <div class="repairers__head">
+      <h2>Réparateurs à proximité</h2>
+      <p>Zone test · Lyon — contact en un clic</p>
+    </div>
 
-    <ul *ngIf="repairers.length; else empty">
+    <ul class="repairers__list" *ngIf="repairers.length; else empty">
       <li *ngFor="let r of repairers">
-        <div>
+        <div class="repairers__identity">
           <strong>{{ r.name }}</strong>
-          <span>{{ r.city }}<ng-container *ngIf="r.distanceKm != null"> · {{ r.distanceKm }} km</ng-container></span>
+          <span>
+            {{ r.city }}
+            <ng-container *ngIf="r.distanceKm != null"> · {{ r.distanceKm }} km</ng-container>
+          </span>
         </div>
-        <div class="contacts">
-          <a *ngIf="r.phone" [href]="telHref(r.phone)">Appeler</a>
-          <a *ngIf="r.email" [href]="mailHref(r.email)">Email</a>
-          <a *ngIf="r.whatsapp" [href]="waHref(r.whatsapp)" target="_blank" rel="noopener">WhatsApp</a>
+        <div class="repairers__actions">
+          <a *ngIf="r.phone" class="link-action" [href]="telHref(r.phone)">Appeler</a>
+          <a *ngIf="r.email" class="link-action" [href]="mailHref(r.email)">Email</a>
+          <a *ngIf="r.whatsapp" class="link-action" [href]="waHref(r.whatsapp)" target="_blank" rel="noopener">WhatsApp</a>
         </div>
       </li>
     </ul>
+
     <ng-template #empty>
-      <p class="empty">Aucun réparateur trouvé pour cette catégorie dans la zone test.</p>
+      <p class="repairers__empty">Aucun réparateur trouvé pour cette catégorie dans la zone test.</p>
     </ng-template>
   </section>
 
-  <button type="button" class="btn" (click)="restart()">Nouvelle photo</button>
+  <div class="result__footer">
+    <button type="button" class="btn btn--ghost" (click)="restart()">Nouvelle photo</button>
+  </div>
 </section>

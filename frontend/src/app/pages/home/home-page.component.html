@@ -1,29 +1,44 @@
-<section class="hero container">
-  <p class="eyebrow">Photo → diagnostic → contact</p>
-  <h1>Passeport de réparation</h1>
-  <p class="lead">
-    Une photo de l’appareil cassé, et en quelques secondes une estimation
-    réparer vs remplacer, plus des réparateurs près de chez toi.
-  </p>
+<section class="home">
+  <div class="home__stage">
+    <div class="home__photo" [class.home__photo--ready]="!!previewUrl" (click)="openPicker()" role="button" tabindex="0" (keydown.enter)="openPicker()">
+      <input #fileInput type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onFileSelected($event)" />
 
-  <div class="drop" [class.drop--ready]="!!previewUrl" (click)="openPicker()" role="button" tabindex="0" (keydown.enter)="openPicker()">
-    <input #fileInput type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onFileSelected($event)" />
-    <ng-container *ngIf="!previewUrl; else preview">
-      <strong>Prendre ou importer une photo</strong>
-      <span>Lave-linge · Lave-vaisselle · Four</span>
-    </ng-container>
-    <ng-template #preview>
-      <img [src]="previewUrl" alt="Aperçu de l’appareil" />
-    </ng-template>
+      <ng-container *ngIf="!previewUrl; else preview">
+        <div class="home__photo-empty">
+          <div class="home__orb" aria-hidden="true">
+            <span></span>
+          </div>
+          <p class="home__photo-kicker">Capture</p>
+          <p class="home__photo-title">Pose ton appareil cassé face à l’objectif</p>
+          <p class="home__photo-hint">JPEG, PNG ou WEBP · lave-linge, lave-vaisselle, four</p>
+        </div>
+      </ng-container>
+
+      <ng-template #preview>
+        <img [src]="previewUrl" alt="Aperçu de l’appareil" />
+        <div class="home__photo-veil"></div>
+        <button type="button" class="home__change" (click)="openPicker(); $event.stopPropagation()">Changer</button>
+      </ng-template>
+    </div>
+
+    <div class="home__copy container">
+      <p class="home__eyebrow">Diagnostic en 30 secondes</p>
+      <h1>Passeport de réparation</h1>
+      <p class="home__lead">
+        Une photo suffit pour estimer si ça vaut le coup de réparer,
+        et trouver un réparateur local.
+      </p>
+
+      <div class="home__actions">
+        <button type="button" class="btn btn--ghost" (click)="openPicker()">Importer une photo</button>
+        <button type="button" class="btn btn--primary" [disabled]="!selectedFile || loading" (click)="analyze()">
+          <span class="btn__spinner" *ngIf="loading" aria-hidden="true"></span>
+          {{ loading ? 'Analyse en cours…' : 'Obtenir mon passeport' }}
+        </button>
+      </div>
+
+      <p class="home__error" *ngIf="error" role="alert">{{ error }}</p>
+      <p class="home__note">Estimation indicative — ce n’est pas un devis.</p>
+    </div>
   </div>
-
-  <div class="actions">
-    <button type="button" class="btn btn--ghost" (click)="openPicker()">Choisir une photo</button>
-    <button type="button" class="btn btn--primary" [disabled]="!selectedFile || loading" (click)="analyze()">
-      {{ loading ? 'Analyse…' : 'Obtenir mon passeport' }}
-    </button>
-  </div>
-
-  <p class="error" *ngIf="error">{{ error }}</p>
-  <p class="hint">Périmètre MVP : lave-linge, lave-vaisselle, four. Estimation indicative, pas un devis.</p>
 </section>

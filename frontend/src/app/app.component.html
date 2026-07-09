@@ -1,9 +1,12 @@
-<header class="top">
-  <div class="container top__inner">
-    <a routerLink="/" class="brand">Passeport de réparation</a>
-    <span class="tag">MVP · électroménager</span>
+<header class="shell-top">
+  <div class="container shell-top__inner">
+    <a routerLink="/" class="mark" aria-label="Passeport de réparation — accueil">
+      <span class="mark__glyph" aria-hidden="true"></span>
+      <span class="mark__text">Passeport</span>
+    </a>
+    <p class="shell-top__meta">Réparer avant de jeter</p>
   </div>
 </header>
-<main>
+<main class="shell-main">
   <router-outlet></router-outlet>
 </main>

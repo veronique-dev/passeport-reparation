@@ -1,184 +1,266 @@
 .result {
-  padding: 1.5rem 0 2rem;
-  animation: rise 0.55s ease both;
+  padding: 1.75rem 0 2rem;
+  animation: rise 0.65s var(--ease) both;
 }
 
-.result__grid {
+.result__intro {
+  margin-bottom: 1.5rem;
+  animation: rise 0.7s var(--ease) both;
+}
+
+.result__eyebrow {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.55rem;
+}
+
+.result__intro h1 {
+  font-size: clamp(2.1rem, 5vw, 3.4rem);
+  max-width: 14ch;
+}
+
+.result__issue {
+  margin-top: 0.7rem;
+  max-width: 36rem;
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+}
+
+.result__layout {
   display: grid;
-  grid-template-columns: 1.05fr 1fr;
-  gap: 1.25rem;
+  grid-template-columns: 1.15fr 0.95fr;
+  gap: 1.15rem;
   align-items: stretch;
 }
 
-.visual {
+.result__visual {
+  margin: 0;
   border-radius: var(--radius);
   overflow: hidden;
-  min-height: 280px;
+  min-height: 340px;
+  background: #16323d;
   box-shadow: var(--shadow);
-  background: #d9d1c2;
+  animation: rise 0.75s var(--ease) 0.05s both;
 }
 
-.visual img {
+.result__visual img {
   width: 100%;
   height: 100%;
+  min-height: 340px;
   object-fit: cover;
   display: block;
-  min-height: 280px;
 }
 
-.panel {
-  background: var(--surface);
-  border: 1px solid var(--line);
+.passport {
+  position: relative;
+  padding: 1.45rem 1.4rem 1.3rem;
   border-radius: var(--radius);
-  padding: 1.4rem 1.5rem;
-  box-shadow: var(--shadow);
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.95), rgba(244, 247, 249, 0.9));
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  animation: rise 0.8s var(--ease) 0.1s both;
 }
 
-.eyebrow {
-  color: var(--accent);
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+.passport::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--accent);
 }
 
-h1 {
-  font-size: clamp(1.8rem, 4vw, 2.4rem);
+.passport[data-verdict='ARBITRATE']::before {
+  background: var(--warn);
 }
 
-.issue {
-  margin-top: 0.65rem;
-  color: var(--ink-muted);
+.passport[data-verdict='REPLACE']::before {
+  background: var(--danger);
 }
 
-.verdict {
-  margin-top: 1.35rem;
+.passport[data-verdict='NONE']::before {
+  background: var(--ink-faint);
+}
+
+.passport__stamp {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
-  align-items: center;
-  padding: 0.9rem 1rem;
-  border-radius: 14px;
-  background: var(--accent-soft);
+  gap: 1rem;
+  padding: 0.95rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--ok-soft);
+  color: var(--accent-deep);
 }
 
-.verdict[data-verdict='ARBITRATE'] {
-  background: #f3e4cc;
+.passport[data-verdict='ARBITRATE'] .passport__stamp {
+  background: var(--warn-soft);
   color: var(--warn);
 }
 
-.verdict[data-verdict='REPLACE'] {
-  background: #f3d9d9;
+.passport[data-verdict='REPLACE'] .passport__stamp {
+  background: var(--danger-soft);
   color: var(--danger);
 }
 
-.costs {
+.passport__stamp span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.passport__stamp strong {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  letter-spacing: -0.03em;
+}
+
+.passport__grid {
   margin-top: 1rem;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
 }
 
-.costs div {
-  padding: 0.85rem 0.9rem;
-  border-radius: 14px;
-  border: 1px solid var(--line);
+.passport__metric {
+  padding: 0.95rem 0.2rem 0.2rem;
   display: grid;
-  gap: 0.25rem;
+  gap: 0.35rem;
+  border-top: 1px solid var(--line);
 }
 
-.costs span,
-.verdict span {
-  font-size: 0.82rem;
-  color: var(--ink-muted);
+.passport__metric span {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.disclaimer,
-.unsupported,
-.sub,
-.empty {
-  margin-top: 1rem;
-  color: var(--ink-muted);
-  font-size: 0.92rem;
+.passport__metric strong {
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
 }
 
-.unsupported {
-  margin-top: 1.25rem;
-  padding: 0.9rem 1rem;
-  border-radius: 14px;
-  background: #f3e4cc;
+.passport__disclaimer,
+.passport__unsupported,
+.repairers__empty {
+  margin-top: 1.1rem;
+  color: var(--ink-faint);
+  font-size: 0.9rem;
+}
+
+.passport__unsupported {
+  margin-top: 0;
+  padding: 0.95rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--warn-soft);
   color: var(--warn);
+  font-weight: 600;
 }
 
 .repairers {
-  margin-top: 2rem;
+  margin-top: 2.4rem;
+  animation: rise 0.75s var(--ease) 0.16s both;
 }
 
-.repairers h2 {
-  font-size: 1.6rem;
+.repairers__head h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
 }
 
-.repairers ul {
+.repairers__head p {
+  margin-top: 0.4rem;
+  color: var(--ink-faint);
+  font-size: 0.92rem;
+}
+
+.repairers__list {
   list-style: none;
-  margin: 1rem 0 0;
+  margin: 1.15rem 0 0;
   padding: 0;
-  display: grid;
-  gap: 0.75rem;
+  border-top: 1px solid var(--line);
 }
 
-.repairers li {
+.repairers__list li {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
   align-items: center;
-  padding: 1rem 1.1rem;
-  border-radius: 14px;
-  background: var(--surface);
-  border: 1px solid var(--line);
+  gap: 1rem;
+  padding: 1.05rem 0.15rem;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.2s ease;
 }
 
-.repairers li span {
+.repairers__list li:hover {
+  background: rgba(12, 124, 116, 0.04);
+}
+
+.repairers__identity strong {
   display: block;
-  color: var(--ink-muted);
-  font-size: 0.9rem;
-  margin-top: 0.2rem;
+  font-size: 1.02rem;
+  letter-spacing: -0.01em;
 }
 
-.contacts {
+.repairers__identity span {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--ink-faint);
+  font-size: 0.9rem;
+}
+
+.repairers__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.55rem;
+  gap: 0.45rem;
 }
 
-.contacts a {
+.link-action {
   text-decoration: none;
-  color: var(--accent);
-  font-weight: 600;
-  font-size: 0.9rem;
-  padding: 0.35rem 0.7rem;
+  color: var(--accent-deep);
+  font-weight: 700;
+  font-size: 0.86rem;
+  padding: 0.45rem 0.8rem;
   border-radius: 999px;
-  background: var(--accent-soft);
-}
-
-.btn {
-  margin-top: 1.5rem;
-  border: 1px solid var(--line);
   background: transparent;
-  border-radius: 999px;
-  padding: 0.8rem 1.2rem;
-  font-weight: 600;
-  cursor: pointer;
+  border: 1px solid rgba(12, 124, 116, 0.28);
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s var(--ease);
 }
 
-@keyframes rise {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.link-action:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #f4fffd;
+  transform: translateY(-1px);
 }
 
-@media (max-width: 800px) {
-  .result__grid {
+.result__footer {
+  margin-top: 1.75rem;
+}
+
+@media (max-width: 860px) {
+  .result__layout {
     grid-template-columns: 1fr;
   }
 
-  .repairers li {
+  .result__visual,
+  .result__visual img {
+    min-height: 240px;
+  }
+
+  .repairers__list li {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 520px) {
+  .passport__grid {
+    grid-template-columns: 1fr;
   }
 }

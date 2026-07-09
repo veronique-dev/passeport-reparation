@@ -1,18 +1,29 @@
 :root {
-  --bg: #f3efe6;
-  --bg-deep: #e8e0d0;
-  --ink: #1c2a24;
-  --ink-muted: #5a6b62;
-  --accent: #0f6b4c;
-  --accent-soft: #d7ebe2;
-  --warn: #9a5b12;
-  --danger: #8b2e2e;
-  --surface: rgba(255, 252, 246, 0.88);
-  --line: rgba(28, 42, 36, 0.12);
-  --shadow: 0 18px 50px rgba(28, 42, 36, 0.08);
-  --radius: 18px;
-  --font-display: "Fraunces", Georgia, serif;
-  --font-body: "DM Sans", system-ui, sans-serif;
+  --ink: #10212b;
+  --ink-soft: #3d5563;
+  --ink-faint: #6b8290;
+  --paper: #f4f7f9;
+  --paper-2: #e8eef2;
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-solid: #ffffff;
+  --line: rgba(16, 33, 43, 0.1);
+  --line-strong: rgba(16, 33, 43, 0.18);
+  --accent: #0c7c74;
+  --accent-deep: #085f59;
+  --accent-glow: rgba(12, 124, 116, 0.16);
+  --accent-ink: #063f3b;
+  --warn: #b86a12;
+  --warn-soft: #fff1de;
+  --danger: #b42318;
+  --danger-soft: #fde8e6;
+  --ok-soft: #e4f6f3;
+  --shadow: 0 24px 60px rgba(16, 33, 43, 0.1);
+  --shadow-soft: 0 10px 30px rgba(16, 33, 43, 0.06);
+  --radius: 22px;
+  --radius-sm: 14px;
+  --font-display: "Syne", "Avenir Next", sans-serif;
+  --font-body: "Manrope", "Segoe UI", sans-serif;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 *,
@@ -29,18 +40,28 @@ html, body {
 body {
   font-family: var(--font-body);
   color: var(--ink);
-  background:
-    radial-gradient(circle at 12% 18%, rgba(15, 107, 76, 0.12), transparent 42%),
-    radial-gradient(circle at 88% 8%, rgba(154, 91, 18, 0.10), transparent 36%),
-    linear-gradient(160deg, var(--bg), var(--bg-deep));
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(ellipse 80% 55% at 8% -10%, rgba(12, 124, 116, 0.18), transparent 55%),
+    radial-gradient(ellipse 60% 45% at 100% 0%, rgba(16, 33, 43, 0.08), transparent 50%),
+    linear-gradient(180deg, #f7fafb 0%, var(--paper-2) 100%),
+    repeating-linear-gradient(
+      -18deg,
+      transparent,
+      transparent 22px,
+      rgba(16, 33, 43, 0.015) 22px,
+      rgba(16, 33, 43, 0.015) 23px
+    );
   background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3 {
   font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   margin: 0;
+  line-height: 1.05;
 }
 
 p {
@@ -48,11 +69,96 @@ p {
   line-height: 1.55;
 }
 
-button, a {
+button, a, input {
   font-family: inherit;
 }
 
+button {
+  appearance: none;
+}
+
+img {
+  max-width: 100%;
+}
+
 .container {
-  width: min(920px, calc(100% - 2rem));
+  width: min(1080px, calc(100% - 2rem));
   margin: 0 auto;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.95rem 1.45rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s ease, opacity 0.2s ease;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.btn:not(:disabled):active {
+  transform: translateY(0);
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+  color: #f4fffd;
+  box-shadow: 0 14px 28px rgba(12, 124, 116, 0.28);
+}
+
+.btn--primary:not(:disabled):hover {
+  box-shadow: 0 18px 34px rgba(12, 124, 116, 0.34);
+}
+
+.btn--ghost {
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  backdrop-filter: blur(8px);
+}
+
+.btn--ghost:not(:disabled):hover {
+  background: #fff;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.92); opacity: 0.55; }
+  70% { transform: scale(1.08); opacity: 0; }
+  100% { transform: scale(1.08); opacity: 0; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
