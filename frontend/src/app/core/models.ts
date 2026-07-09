@@ -66,6 +66,19 @@ export interface Repairer {
   distanceKm?: number;
 }
 
+export type VisionSuggestResponse = {
+  mediaId: string;
+  category: ApplianceCategory;
+  applianceLabel: string;
+  suggestedIssueCode?: IssueCode;
+  probableIssue: string;
+  confidence: number;
+  supported: boolean;
+  provider: string;
+  rationale: string;
+  suggestionOnly: boolean;
+};
+
 export interface CategoryChoice {
   value: ApplianceCategory;
   label: string;

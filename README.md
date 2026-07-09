@@ -16,11 +16,12 @@ En ~30 secondes, à partir d’une photo :
 
 ## Fonctionnalités MVP
 
-### 1. Photo + confirmation appareil / panne
+### 1. Photo + suggestion IA + confirmation appareil / panne
 
 - Import d’une photo de l’appareil
-- Confirmation manuelle de la catégorie (lave-linge, lave-vaisselle, four, autre)
-- Sélection du type de panne pour affiner l’estimation
+- Suggestion IA de catégorie / panne (préremplissage, non bloquant)
+- Confirmation manuelle obligatoire (lave-linge, lave-vaisselle, four, autre)
+- Sélection / correction du type de panne pour affiner l’estimation
 - Hors périmètre → message explicite, sans estimation trompeuse
 
 ### 2. Estimation réparer vs remplacer
@@ -44,6 +45,7 @@ Documentation PO / architecture / QA :
 - [`docs/02-architecture.md`](docs/02-architecture.md)
 - [`docs/03-user-stories.md`](docs/03-user-stories.md)
 - [`docs/04-plan-de-test.md`](docs/04-plan-de-test.md)
+- [`docs/05-ai-vision-branch.md`](docs/05-ai-vision-branch.md) — suggestion IA derrière confirmation
 - [`product/user-stories-mvp.json`](product/user-stories-mvp.json)
 - [`product/user-stories-mvp.csv`](product/user-stories-mvp.csv)
 - [`product/test-matrix.json`](product/test-matrix.json)
@@ -62,7 +64,7 @@ mvn -pl e2e-tests -Pe2e test -De2e.base.url=http://localhost:8090
 ## Parcours utilisateur
 
 ```
-Photo → Catégorie + panne → Verdict € → Contacter un réparateur
+Photo → Suggestion IA → Confirmation catégorie/panne → Verdict € → Contacter un réparateur
 ```
 
 ## Hors scope (v1)
@@ -89,7 +91,7 @@ Photo → Catégorie + panne → Verdict € → Contacter un réparateur
 | Service | Port | Responsabilité |
 |---------|------|----------------|
 | **gateway** | 8090 | Entrée unique, routage, CORS |
-| **diagnosis-service** | 8081 | Confirmation catégorie/panne + estimation + verdict |
+| **diagnosis-service** | 8081 | Suggestion vision + confirmation catégorie/panne + estimation + verdict |
 | **repairer-service** | 8082 | Annuaire curaté, filtre catégorie / zone |
 | **media-service** | 8083 | Upload / stockage local des photos |
 | **frontend** | 4200 (dev) / 4201 (Docker) | SPA Angular |
@@ -165,12 +167,23 @@ docker compose up --build
 |---------|--------|-------------|
 | `POST` | `/api/media` | Upload photo (`multipart/form-data`, champ `file`) |
 | `GET` | `/api/media/{id}` | Télécharger la photo |
+| `POST` | `/api/diagnoses/suggest` | `{ "mediaId" }` → suggestion IA (catégorie / panne) |
 | `GET` | `/api/diagnoses/issues?category=OVEN` | Liste des pannes / prix pour une catégorie |
 | `POST` | `/api/diagnoses` | `{ "mediaId", "category", "issueCode?" }` → estimation |
 | `GET` | `/api/diagnoses/{id}` | Relire un diagnostic |
 | `GET` | `/api/repairers?category=WASHING_MACHINE&city=Lyon` | Annuaire |
 
-Le diagnostic MVP s’appuie sur la **confirmation utilisateur** (catégorie + panne) et une grille de prix, pas sur une IA vision.
+Le diagnostic s’appuie sur la **confirmation utilisateur** (catégorie + panne) et une grille de prix. La suggestion IA (`/suggest`) préremplit l’UI mais n’est jamais la source de vérité.
+
+### Vision IA (optionnelle)
+
+| `VISION_PROVIDER` | Comportement |
+|-------------------|--------------|
+| `mock` (défaut) | Suggestion locale sans clé API |
+| `openai` | OpenAI Vision (`OPENAI_API_KEY` requis) |
+| `off` | Pas de suggestion — choix 100 % manuel |
+
+Voir [`.env.example`](.env.example) et [`docs/05-ai-vision-branch.md`](docs/05-ai-vision-branch.md).
 
 ### Collection Postman
 
@@ -185,7 +198,7 @@ Variable `baseUrl` = `http://localhost:8090`. Pour l’upload, sélectionner `sa
 
 | Version | Contenu |
 |---------|---------|
-| **MVP** | Photo → confirmation catégorie/panne → estimation → annuaire |
+| **MVP** | Photo → suggestion IA + confirmation → estimation → annuaire |
 | **v1.1** | Tutoriels DIY si panne simple |
 | **v1.2** | Élargissement des catégories / zones |
 | **v2** | Compte utilisateur, suivi, partenariats renforcés |

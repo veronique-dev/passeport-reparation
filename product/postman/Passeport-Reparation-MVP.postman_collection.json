@@ -99,6 +99,35 @@
           }
         },
         {
+          "name": "US-02 — POST /api/diagnoses/suggest (après upload)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-02: status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('US-02: suggestionOnly + category', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.suggestionOnly).to.eql(true);",
+                  "  pm.expect(body.category).to.be.a('string');",
+                  "  pm.expect(body.confidence).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mediaId\": \"{{mediaId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/diagnoses/suggest",
+            "description": "Suggestion IA (mock par défaut). La confirmation utilisateur reste obligatoire via POST /api/diagnoses."
+          }
+        },
+        {
           "name": "US-03 — GET /api/diagnoses/issues?category=OVEN",
           "event": [
             {

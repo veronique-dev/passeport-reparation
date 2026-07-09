@@ -3,8 +3,11 @@ package com.passeportreparation.diagnosis.controller;
 import com.passeportreparation.common.dto.DiagnosisRequest;
 import com.passeportreparation.common.dto.DiagnosisResponse;
 import com.passeportreparation.common.dto.IssueOptionDto;
+import com.passeportreparation.common.dto.VisionSuggestRequest;
+import com.passeportreparation.common.dto.VisionSuggestResponse;
 import com.passeportreparation.common.enums.ApplianceCategory;
 import com.passeportreparation.diagnosis.service.DiagnosisService;
+import com.passeportreparation.diagnosis.service.VisionSuggestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,10 +22,16 @@ import java.util.UUID;
 public class DiagnosisController {
 
     private final DiagnosisService diagnosisService;
+    private final VisionSuggestService visionSuggestService;
 
     @GetMapping("/issues")
     public List<IssueOptionDto> issues(@RequestParam ApplianceCategory category) {
         return diagnosisService.listIssues(category);
+    }
+
+    @PostMapping("/suggest")
+    public VisionSuggestResponse suggest(@Valid @RequestBody VisionSuggestRequest request) {
+        return visionSuggestService.suggest(request);
     }
 
     @PostMapping

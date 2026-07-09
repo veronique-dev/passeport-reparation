@@ -1,8 +1,10 @@
 package com.passeportreparation.diagnosis.config;
 
 import com.passeportreparation.common.dto.ApiError;
+import com.passeportreparation.diagnosis.media.MediaFetchException;
 import com.passeportreparation.diagnosis.service.DiagnosisNotFoundException;
 import com.passeportreparation.diagnosis.service.InvalidDiagnosisRequestException;
+import com.passeportreparation.diagnosis.vision.VisionProviderException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +22,19 @@ public class DiagnosisExceptionHandler {
         return error(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(MediaFetchException.class)
+    public ResponseEntity<ApiError> mediaNotFound(MediaFetchException ex, HttpServletRequest request) {
+        return error(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(InvalidDiagnosisRequestException.class)
     public ResponseEntity<ApiError> invalid(InvalidDiagnosisRequestException ex, HttpServletRequest request) {
         return error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(VisionProviderException.class)
+    public ResponseEntity<ApiError> vision(VisionProviderException ex, HttpServletRequest request) {
+        return error(HttpStatus.BAD_GATEWAY, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
