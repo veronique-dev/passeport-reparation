@@ -1,0 +1,356 @@
+{
+  "info": {
+    "_postman_id": "passeport-reparation-mvp",
+    "name": "Passeport Réparation MVP",
+    "description": "Scénarios API alignés sur les User Stories MVP.\n\nPrérequis : `docker compose up` — gateway sur http://localhost:8090\n\nParcours : Photo → Catégorie + panne → Verdict € → Réparateurs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8090" },
+    { "key": "mediaId", "value": "" },
+    { "key": "diagnosisId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "EPIC-1 — Capture & confirmation",
+      "item": [
+        {
+          "name": "US-01 — POST /api/media (upload PNG)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-01: status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('US-01: mediaId présent', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.mediaId).to.be.a('string').and.not.empty;",
+                  "  pm.expect(body.contentType).to.eql('image/png');",
+                  "  pm.collectionVariables.set('mediaId', body.mediaId);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "description": "Sélectionne product/postman/sample.png (ou toute image PNG/JPEG/WEBP)",
+                  "type": "file",
+                  "src": "sample.png"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/media"
+          }
+        },
+        {
+          "name": "US-01 — GET /api/media/{mediaId}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-01: download 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/media/{{mediaId}}"
+          }
+        },
+        {
+          "name": "US-01 — POST /api/media (PDF rejeté)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-01: status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('US-01: message type non supporté', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.message).to.include('Type non supporté');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [],
+                  "description": "Uploader un .pdf pour vérifier le rejet (ou laisser vide et adapter)"
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/api/media"
+          }
+        },
+        {
+          "name": "US-03 — GET /api/diagnoses/issues?category=OVEN",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-03: status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('US-03: liste de pannes four', () => {",
+                  "  const issues = pm.response.json();",
+                  "  pm.expect(issues).to.be.an('array').that.is.not.empty;",
+                  "  pm.expect(issues.some(i => i.code === 'OV_DOOR_SEAL')).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/diagnoses/issues?category=OVEN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "diagnoses", "issues"],
+              "query": [{ "key": "category", "value": "OVEN" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "EPIC-2 — Estimation & verdict",
+      "item": [
+        {
+          "name": "US-04 — POST /api/diagnoses (UNSUPPORTED)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-04: status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('US-04: hors périmètre', () => {",
+                  "  const d = pm.response.json();",
+                  "  pm.expect(d.supported).to.eql(false);",
+                  "  pm.expect(d.estimate).to.eql(null);",
+                  "  pm.expect(d.verdict).to.eql(null);",
+                  "  pm.expect(d.issueCode).to.eql('UNSUPPORTED_OTHER');",
+                  "  pm.expect(d.disclaimer).to.be.a('string').and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mediaId\": \"{{mediaId}}\",\n  \"category\": \"UNSUPPORTED\"\n}"
+            },
+            "url": "{{baseUrl}}/api/diagnoses"
+          }
+        },
+        {
+          "name": "US-05/06/07 — POST /api/diagnoses (OV_DOOR_SEAL)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-05: status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('US-05/06/07: estimation + verdict + disclaimer', () => {",
+                  "  const d = pm.response.json();",
+                  "  pm.expect(d.supported).to.eql(true);",
+                  "  pm.expect(d.applianceLabel).to.eql('Four');",
+                  "  pm.expect(d.estimate.repairLow).to.eql(50);",
+                  "  pm.expect(d.estimate.repairHigh).to.eql(120);",
+                  "  pm.expect(d.estimate.replacementApprox).to.eql(400);",
+                  "  pm.expect(d.estimate.currency).to.eql('EUR');",
+                  "  pm.expect(d.verdict).to.eql('REPAIR');",
+                  "  pm.expect(d.disclaimer).to.include('indicative');",
+                  "  pm.expect(d.userConfirmed).to.eql(true);",
+                  "  pm.collectionVariables.set('diagnosisId', d.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mediaId\": \"{{mediaId}}\",\n  \"category\": \"OVEN\",\n  \"issueCode\": \"OV_DOOR_SEAL\"\n}"
+            },
+            "url": "{{baseUrl}}/api/diagnoses"
+          }
+        },
+        {
+          "name": "US-05 — POST /api/diagnoses (OV_ELECTRONIC_BOARD)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-05: carte plus chère que joint', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  const d = pm.response.json();",
+                  "  pm.expect(d.estimate.repairHigh).to.be.above(120);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mediaId\": \"{{mediaId}}\",\n  \"category\": \"OVEN\",\n  \"issueCode\": \"OV_ELECTRONIC_BOARD\"\n}"
+            },
+            "url": "{{baseUrl}}/api/diagnoses"
+          }
+        },
+        {
+          "name": "US-10 — GET /api/diagnoses/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-10: status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('US-10: même id', () => {",
+                  "  const d = pm.response.json();",
+                  "  pm.expect(d.id).to.eql(pm.collectionVariables.get('diagnosisId'));",
+                  "  pm.expect(d.category).to.eql('OVEN');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/diagnoses/{{diagnosisId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "EPIC-3 — Annuaire réparateurs",
+      "item": [
+        {
+          "name": "US-08 — GET /api/repairers?category=OVEN&city=Lyon",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-08: status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('US-08: réparateurs Lyon / OVEN', () => {",
+                  "  const list = pm.response.json();",
+                  "  pm.expect(list).to.be.an('array').that.is.not.empty;",
+                  "  list.forEach(r => {",
+                  "    pm.expect(r.city.toLowerCase()).to.eql('lyon');",
+                  "    pm.expect(r.categories).to.include('OVEN');",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/repairers?category=OVEN&city=Lyon",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "repairers"],
+              "query": [
+                { "key": "category", "value": "OVEN" },
+                { "key": "city", "value": "Lyon" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "US-09 — GET /api/repairers (contacts présents)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-09: au moins un téléphone ou email', () => {",
+                  "  const list = pm.response.json();",
+                  "  pm.expect(list.some(r => r.phone || r.email || r.whatsapp)).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/repairers?category=WASHING_MACHINE&city=Lyon",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "repairers"],
+              "query": [
+                { "key": "category", "value": "WASHING_MACHINE" },
+                { "key": "city", "value": "Lyon" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Parcours bout-en-bout",
+      "item": [
+        {
+          "name": "E2E — Lave-linge pompe de vidange",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Exécuter d'abord US-01 upload pour peupler mediaId"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('E2E: diagnostic lave-linge', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  const d = pm.response.json();",
+                  "  pm.expect(d.supported).to.eql(true);",
+                  "  pm.expect(d.verdict).to.eql('REPAIR');",
+                  "  pm.expect(d.estimate.repairLow).to.eql(80);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mediaId\": \"{{mediaId}}\",\n  \"category\": \"WASHING_MACHINE\",\n  \"issueCode\": \"WM_DRAIN_PUMP\"\n}"
+            },
+            "url": "{{baseUrl}}/api/diagnoses"
+          }
+        }
+      ]
+    }
+  ]
+}

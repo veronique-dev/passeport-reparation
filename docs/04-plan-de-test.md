@@ -82,7 +82,9 @@ curl -s -X POST http://localhost:8090/api/diagnoses \
 curl -s 'http://localhost:8090/api/repairers?category=OVEN&city=Lyon' | jq
 ```
 
-## Critères de sortie QA (MVP)
+Importer : `product/postman/Passeport-Reparation-MVP.postman_collection.json`  
+Image d’exemple : `product/postman/sample.png`  
+`baseUrl` = `http://localhost:8090`
 
 - [ ] Tous les tests unitaires diagnosis/media/repairer verts
 - [ ] Suite E2E `e2e-tests` verte via gateway `:8090`

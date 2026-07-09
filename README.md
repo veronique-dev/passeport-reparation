@@ -172,6 +172,15 @@ docker compose up --build
 
 Le diagnostic MVP s’appuie sur la **confirmation utilisateur** (catégorie + panne) et une grille de prix, pas sur une IA vision.
 
+### Collection Postman
+
+Importer dans Postman :
+
+- [`product/postman/Passeport-Reparation-MVP.postman_collection.json`](product/postman/Passeport-Reparation-MVP.postman_collection.json)
+- Image d’exemple : [`product/postman/sample.png`](product/postman/sample.png)
+
+Variable `baseUrl` = `http://localhost:8090`. Pour l’upload, sélectionner `sample.png` (ou une autre image) dans le champ `file`.
+
 ## Roadmap indicative
 
 | Version | Contenu |
