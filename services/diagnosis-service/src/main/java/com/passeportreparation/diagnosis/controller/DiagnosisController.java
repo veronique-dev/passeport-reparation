@@ -50,6 +50,11 @@ public class DiagnosisController {
         return diagnosisService.diagnose(request, userId);
     }
 
+    @PostMapping("/{id}/claim")
+    public DiagnosisResponse claim(@PathVariable UUID id, Authentication authentication) {
+        return diagnosisService.claim(id, (UUID) authentication.getPrincipal());
+    }
+
     @GetMapping("/{id}")
     public DiagnosisResponse get(@PathVariable UUID id) {
         return diagnosisService.getById(id);

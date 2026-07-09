@@ -2,6 +2,7 @@ package com.passeportreparation.diagnosis.config;
 
 import com.passeportreparation.common.dto.ApiError;
 import com.passeportreparation.diagnosis.media.MediaFetchException;
+import com.passeportreparation.diagnosis.service.DiagnosisClaimConflictException;
 import com.passeportreparation.diagnosis.service.DiagnosisNotFoundException;
 import com.passeportreparation.diagnosis.service.InvalidDiagnosisRequestException;
 import com.passeportreparation.diagnosis.vision.VisionProviderException;
@@ -30,6 +31,11 @@ public class DiagnosisExceptionHandler {
     @ExceptionHandler(InvalidDiagnosisRequestException.class)
     public ResponseEntity<ApiError> invalid(InvalidDiagnosisRequestException ex, HttpServletRequest request) {
         return error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(DiagnosisClaimConflictException.class)
+    public ResponseEntity<ApiError> claimConflict(DiagnosisClaimConflictException ex, HttpServletRequest request) {
+        return error(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(VisionProviderException.class)

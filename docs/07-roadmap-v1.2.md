@@ -231,7 +231,7 @@ Hors vague v1.2 (garder en v2+) : OAuth, DIY, multi-villes GPS, marketplace, dev
 
 | ID | Story | Vague | Statut |
 |----|-------|-------|--------|
-| US-12 | Claim passeport anonyme | A | À faire |
+| US-12 | Claim passeport anonyme | A | Fait |
 | US-13 | Liste Mes passeports enrichie | A | À faire |
 | US-14 | Grille de prix fiabilisée | B | À faire |
 | US-15 | Annuaire enrichi | B | À faire |

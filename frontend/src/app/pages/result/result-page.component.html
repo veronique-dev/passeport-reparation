@@ -71,7 +71,10 @@
     <div>
       <p class="result__tagline">Répare d’abord. Achète ensuite.</p>
       <p class="result__save" *ngIf="!diagnosis?.userId">
-        <a routerLink="/inscription">Crée un compte</a> pour retrouver ce passeport plus tard.
+        <a routerLink="/inscription">Crée un compte</a>
+        ou
+        <a routerLink="/connexion">connecte-toi</a>
+        pour retrouver ce passeport dans Mes passeports.
       </p>
       <p class="result__save" *ngIf="diagnosis?.userId">
         Enregistré dans <a routerLink="/mes-passeports">Mes passeports</a>.

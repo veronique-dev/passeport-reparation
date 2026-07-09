@@ -98,6 +98,27 @@ public class DiagnosisService {
                 .toList();
     }
 
+    /**
+     * US-12 — rattache un diagnostic anonyme (userId null) au compte connecté.
+     */
+    @Transactional
+    public DiagnosisResponse claim(UUID diagnosisId, UUID userId) {
+        Diagnosis entity = repository.findById(diagnosisId)
+                .orElseThrow(() -> new DiagnosisNotFoundException(diagnosisId));
+
+        if (entity.getUserId() == null) {
+            entity.setUserId(userId);
+            return toResponse(repository.save(entity), estimateOf(entity));
+        }
+
+        if (entity.getUserId().equals(userId)) {
+            return toResponse(entity, estimateOf(entity));
+        }
+
+        throw new DiagnosisClaimConflictException(
+                "Ce passeport est déjà rattaché à un autre compte.");
+    }
+
     private static CostEstimateDto estimateOf(Diagnosis entity) {
         if (!entity.isSupported() || entity.getRepairLow() == null) {
             return null;

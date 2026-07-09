@@ -248,6 +248,7 @@ docker compose up --build
 | `GET` | `/api/diagnoses/issues?category=OVEN` | Catalogue pannes | public |
 | `POST` | `/api/diagnoses` | Estimation (rattache `userId` si JWT) | public / Bearer |
 | `GET` | `/api/diagnoses/mine` | Historique de l’utilisateur | Bearer |
+| `POST` | `/api/diagnoses/{id}/claim` | Rattacher un passeport anonyme au compte | Bearer |
 | `GET` | `/api/diagnoses/{id}` | Relire un diagnostic | public |
 | `GET` | `/api/repairers?category=&city=Lyon` | Annuaire | public |
 

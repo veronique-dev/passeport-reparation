@@ -35,6 +35,7 @@ public class DiagnosisSecurityConfig {
                                 "/actuator/info"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/diagnoses/mine").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/diagnoses/*/claim").authenticated()
                         .requestMatchers("/api/diagnoses/**").permitAll()
                         .anyRequest().permitAll()
                 )

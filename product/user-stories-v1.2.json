@@ -79,9 +79,7 @@
       "priority": "Must",
       "wave": "A",
       "epic": "EPIC-5",
-      "status": "todo",
-      "labels": ["auth", "diagnosis", "frontend"],
-      "userStory": "En tant que propriétaire qui vient de créer un compte, je veux rattacher le dernier diagnostic fait en anonyme, afin de le retrouver dans Mes passeports.",
+      "status": "done",
       "acceptanceCriteria": [
         "Given un diagnostic anonyme en session, When je m'inscris ou me connecte, Then il est rattaché à mon userId",
         "Given le rattachement réussi, When j'ouvre Mes passeports, Then le passeport apparaît",
