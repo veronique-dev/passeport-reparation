@@ -263,6 +263,13 @@ Variable `baseUrl` = `http://localhost:8090`. Pour l’upload, sélectionner `sa
 | **v1.2** | Tutoriels DIY / élargissement catégories & zones |
 | **v2** | OAuth, suivi réparation, partenariats renforcés |
 
+## 🤖 Note sur l'utilisation de l'IA
+
+J'utilise Cursor comme accélérateur de développement, au même titre que Copilot
+ou un bon IDE — pour le boilerplate et l'itération rapide. La conception (choix
+d'architecture, arbitrages techniques, logique métier) reste un travail manuel :
+c'est ce qui distingue un MVP fonctionnel d'un simple prototype généré.
+
 ## Licence
 
 À définir.
