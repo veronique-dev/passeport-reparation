@@ -28,8 +28,9 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 70% 55% at 78% 18%, rgba(12, 124, 116, 0.42), transparent 55%),
-    radial-gradient(ellipse 50% 40% at 12% 88%, rgba(255, 255, 255, 0.07), transparent 50%);
+    radial-gradient(ellipse 65% 50% at 50% 35%, rgba(12, 124, 116, 0.38), transparent 60%),
+    radial-gradient(ellipse 45% 35% at 20% 80%, rgba(255, 255, 255, 0.06), transparent 50%),
+    radial-gradient(ellipse 40% 30% at 85% 75%, rgba(126, 240, 228, 0.08), transparent 45%);
   pointer-events: none;
   z-index: 1;
   animation: glow-drift 8s ease-in-out infinite alternate;
@@ -49,51 +50,98 @@
   z-index: 2;
   min-height: inherit;
   display: grid;
-  align-content: end;
-  gap: 0.85rem;
-  padding: clamp(5.5rem, 14vh, 8rem) clamp(1.35rem, 4vw, 3rem) clamp(2.5rem, 6vh, 3.5rem);
+  place-content: center;
+  justify-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: clamp(5rem, 12vh, 7rem) clamp(1.25rem, 4vw, 2.5rem) clamp(2.5rem, 6vh, 3.5rem);
   color: #eef8f6;
-  max-width: 40rem;
+  width: 100%;
   animation: rise 0.85s var(--ease) both;
 }
 
 .home__brand {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(1.15rem, 2.4vw, 1.45rem);
-  letter-spacing: -0.03em;
-  color: #dff8f4;
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(223, 248, 244, 0.72);
+  animation: rise 0.7s var(--ease) both;
 }
 
 .home__slogan {
+  display: grid;
+  gap: 0.15em;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(2.35rem, 7.5vw, 4.6rem);
+  font-size: clamp(2.5rem, 8vw, 5rem);
   letter-spacing: -0.045em;
   line-height: 0.98;
-  max-width: 11ch;
   color: #fff;
-  text-wrap: balance;
+  margin: 0.15rem 0 0.25rem;
+}
+
+.home__slogan-line {
+  display: block;
+  animation: slogan-pop 0.85s var(--ease) both;
+}
+
+.home__slogan-line--go {
+  color: #fff;
+}
+
+.home__slogan-line--wait {
+  color: rgba(223, 248, 244, 0.55);
+  animation-delay: 0.14s;
+  position: relative;
+}
+
+.home__slogan-line--wait::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0.12em;
+  width: min(100%, 11ch);
+  height: 0.12em;
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(126, 240, 228, 0.55), transparent);
+  animation: underline-draw 0.7s var(--ease) 0.55s both;
 }
 
 .home__lead {
-  max-width: 28rem;
+  max-width: 26rem;
   color: rgba(223, 248, 244, 0.78);
-  font-size: clamp(1rem, 2.2vw, 1.12rem);
+  font-size: clamp(1.02rem, 2.2vw, 1.18rem);
   line-height: 1.5;
+  text-wrap: balance;
+  animation: rise 0.85s var(--ease) 0.18s both;
 }
 
 .home__cta {
-  margin-top: 0.55rem;
+  margin-top: 0.65rem;
   width: fit-content;
-  animation: rise 0.9s var(--ease) 0.12s both;
+  min-width: 12.5rem;
+  animation: rise 0.9s var(--ease) 0.28s both;
+  box-shadow:
+    0 14px 28px rgba(12, 124, 116, 0.32),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+}
+
+.home__cta:not(:disabled):hover {
+  box-shadow:
+    0 18px 36px rgba(12, 124, 116, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset;
 }
 
 .home__hint {
-  color: rgba(223, 248, 244, 0.48);
-  font-size: 0.82rem;
+  color: rgba(223, 248, 244, 0.45);
+  font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  animation: rise 0.9s var(--ease) 0.36s both;
 }
 
 .home__photo img {
@@ -417,6 +465,28 @@
   to { opacity: 1; transform: scale(1.04); }
 }
 
+@keyframes slogan-pop {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes underline-draw {
+  from {
+    transform: translateX(-50%) scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) scaleX(1);
+    opacity: 1;
+  }
+}
+
 @media (max-width: 720px) {
   .home__photo {
     min-height: 88vh;
@@ -429,7 +499,12 @@
   }
 
   .home__hero {
+    padding-inline: 1.15rem;
     padding-bottom: 2.25rem;
+  }
+
+  .home__slogan {
+    font-size: clamp(2.2rem, 11vw, 3.2rem);
   }
 
   .home__panel {
