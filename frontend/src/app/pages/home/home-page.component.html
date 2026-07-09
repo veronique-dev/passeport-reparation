@@ -1,6 +1,13 @@
 <section class="home">
   <div class="home__stage">
-    <div class="home__photo" [class.home__photo--ready]="!!previewUrl" (click)="openPicker()" role="button" tabindex="0" (keydown.enter)="openPicker()">
+    <div
+      class="home__photo"
+      [class.home__photo--ready]="!!previewUrl"
+      (click)="openPicker()"
+      role="button"
+      tabindex="0"
+      (keydown.enter)="openPicker()"
+    >
       <input #fileInput type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onFileSelected($event)" />
 
       <ng-container *ngIf="!previewUrl; else preview">
@@ -10,7 +17,7 @@
           </div>
           <p class="home__photo-kicker">Capture</p>
           <p class="home__photo-title">Pose ton appareil cassé face à l’objectif</p>
-          <p class="home__photo-hint">JPEG, PNG ou WEBP · lave-linge, lave-vaisselle, four</p>
+          <p class="home__photo-hint">Puis confirme la catégorie et le type de panne</p>
         </div>
       </ng-container>
 
@@ -22,23 +29,62 @@
     </div>
 
     <div class="home__copy container">
-      <p class="home__eyebrow">Diagnostic en 30 secondes</p>
+      <p class="home__eyebrow">Photo + confirmation</p>
       <h1>Passeport de réparation</h1>
       <p class="home__lead">
-        Une photo suffit pour estimer si ça vaut le coup de réparer,
-        et trouver un réparateur local.
+        Importe une photo, indique l’appareil et le symptôme :
+        on estime le coût et on te propose des réparateurs locaux.
       </p>
 
       <div class="home__actions">
-        <button type="button" class="btn btn--ghost" (click)="openPicker()">Importer une photo</button>
-        <button type="button" class="btn btn--primary" [disabled]="!selectedFile || loading" (click)="analyze()">
-          <span class="btn__spinner" *ngIf="loading" aria-hidden="true"></span>
-          {{ loading ? 'Analyse en cours…' : 'Obtenir mon passeport' }}
+        <button type="button" class="btn btn--ghost" (click)="openPicker()">
+          {{ selectedFile ? 'Changer la photo' : 'Importer une photo' }}
         </button>
       </div>
 
+      <section class="confirm" *ngIf="selectedFile">
+        <h2>Quel appareil&nbsp;?</h2>
+        <div class="confirm__cats" role="radiogroup" aria-label="Catégorie d’appareil">
+          <button
+            type="button"
+            class="chip"
+            *ngFor="let cat of categories"
+            [class.chip--active]="selectedCategory === cat.value"
+            (click)="selectCategory(cat.value)"
+          >
+            <strong>{{ cat.label }}</strong>
+            <span>{{ cat.hint }}</span>
+          </button>
+        </div>
+
+        <ng-container *ngIf="selectedCategory && selectedCategory !== 'UNSUPPORTED'">
+          <h2>Quel symptôme&nbsp;?</h2>
+          <p class="confirm__loading" *ngIf="loadingIssues">Chargement des pannes…</p>
+          <div class="confirm__issues" *ngIf="!loadingIssues" role="radiogroup" aria-label="Type de panne">
+            <button
+              type="button"
+              class="issue"
+              *ngFor="let issue of issues"
+              [class.issue--active]="selectedIssue === issue.code"
+              (click)="selectIssue(issue.code)"
+            >
+              {{ issue.label }}
+            </button>
+          </div>
+        </ng-container>
+
+        <p class="confirm__warn" *ngIf="selectedCategory === 'UNSUPPORTED'">
+          Hors périmètre MVP : on ne pourra pas estimer ni proposer de réparateur pour cet appareil.
+        </p>
+
+        <button type="button" class="btn btn--primary confirm__submit" [disabled]="!canSubmit" (click)="analyze()">
+          <span class="btn__spinner" *ngIf="loading" aria-hidden="true"></span>
+          {{ loading ? 'Estimation…' : 'Obtenir mon passeport' }}
+        </button>
+      </section>
+
       <p class="home__error" *ngIf="error" role="alert">{{ error }}</p>
-      <p class="home__note">Estimation indicative — ce n’est pas un devis.</p>
+      <p class="home__note">Estimation indicative selon le type de panne — ce n’est pas un devis.</p>
     </div>
   </div>
 </section>

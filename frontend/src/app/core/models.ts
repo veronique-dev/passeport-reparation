@@ -1,5 +1,22 @@
 export type ApplianceCategory = 'WASHING_MACHINE' | 'DISHWASHER' | 'OVEN' | 'UNSUPPORTED';
 export type RepairVerdict = 'REPAIR' | 'ARBITRATE' | 'REPLACE';
+export type IssueCode =
+  | 'WM_DRAIN_PUMP'
+  | 'WM_DOOR_LOCK'
+  | 'WM_NO_SPIN'
+  | 'WM_ELECTRONIC_BOARD'
+  | 'WM_UNKNOWN'
+  | 'DW_HEATING'
+  | 'DW_DRAIN'
+  | 'DW_SPRAY_ARM'
+  | 'DW_ELECTRONIC_BOARD'
+  | 'DW_UNKNOWN'
+  | 'OV_THERMOSTAT'
+  | 'OV_HEATING_ELEMENT'
+  | 'OV_DOOR_SEAL'
+  | 'OV_ELECTRONIC_BOARD'
+  | 'OV_UNKNOWN'
+  | 'UNSUPPORTED_OTHER';
 
 export interface CostEstimate {
   repairLow: number;
@@ -15,17 +32,25 @@ export interface MediaUploadResponse {
   url: string;
 }
 
+export interface IssueOption {
+  code: IssueCode;
+  label: string;
+  category: ApplianceCategory;
+}
+
 export interface DiagnosisResponse {
   id: string;
   mediaId: string;
   category: ApplianceCategory;
   applianceLabel: string;
+  issueCode?: IssueCode;
   probableIssue: string;
   confidence: number;
   estimate: CostEstimate | null;
   verdict: RepairVerdict | null;
   disclaimer: string;
   supported: boolean;
+  userConfirmed?: boolean;
 }
 
 export interface Repairer {
@@ -39,4 +64,10 @@ export interface Repairer {
   latitude?: number;
   longitude?: number;
   distanceKm?: number;
+}
+
+export interface CategoryChoice {
+  value: ApplianceCategory;
+  label: string;
+  hint: string;
 }

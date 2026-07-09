@@ -43,7 +43,7 @@ En ~30 secondes, à partir d’une photo :
 ## Parcours utilisateur
 
 ```
-Photo → Diagnostic + verdict € → Contacter un réparateur
+Photo → Catégorie + panne → Verdict € → Contacter un réparateur
 ```
 
 ## Hors scope (v1)
@@ -69,11 +69,11 @@ Photo → Diagnostic + verdict € → Contacter un réparateur
 
 | Service | Port | Responsabilité |
 |---------|------|----------------|
-| **gateway** | 8080 | Entrée unique, routage, CORS |
+| **gateway** | 8090 | Entrée unique, routage, CORS |
 | **diagnosis-service** | 8081 | Vision (mock) + estimation + verdict |
 | **repairer-service** | 8082 | Annuaire curaté, filtre catégorie / zone |
 | **media-service** | 8083 | Upload / stockage local des photos |
-| **frontend** | 4200 | SPA Angular |
+| **frontend** | 4200 (dev) / 4201 (Docker) | SPA Angular |
 
 ```
 passeport-reparation/
@@ -102,6 +102,7 @@ passeport-reparation/
 
 ```bash
 docker compose up -d postgres
+# Postgres exposé sur le port 5434 (5433 est souvent pris par d’autres projets)
 ```
 
 ### 2. Backend
@@ -120,7 +121,7 @@ mvn -pl services/repairer-service -am spring-boot:run
 mvn -pl services/gateway -am spring-boot:run
 ```
 
-API via gateway : `http://localhost:8080`
+API via gateway : `http://localhost:8090`
 
 ### 3. Frontend
 
@@ -136,8 +137,8 @@ App : `http://localhost:4200`
 docker compose up --build
 ```
 
-- Frontend : http://localhost:4200  
-- API : http://localhost:8080  
+- Frontend : http://localhost:4201  
+- API : http://localhost:8090  
 
 ## API (via gateway)
 
@@ -145,17 +146,18 @@ docker compose up --build
 |---------|--------|-------------|
 | `POST` | `/api/media` | Upload photo (`multipart/form-data`, champ `file`) |
 | `GET` | `/api/media/{id}` | Télécharger la photo |
-| `POST` | `/api/diagnoses` | `{ "mediaId": "..." }` → diagnostic + estimation |
+| `GET` | `/api/diagnoses/issues?category=OVEN` | Liste des pannes / prix pour une catégorie |
+| `POST` | `/api/diagnoses` | `{ "mediaId", "category", "issueCode?" }` → estimation |
 | `GET` | `/api/diagnoses/{id}` | Relire un diagnostic |
 | `GET` | `/api/repairers?category=WASHING_MACHINE&city=Lyon` | Annuaire |
 
-Vision IA : `VISION_PROVIDER=mock` par défaut (pas de clé API requise).
+Le diagnostic MVP s’appuie sur la **confirmation utilisateur** (catégorie + panne) et une grille de prix, pas sur une IA vision.
 
 ## Roadmap indicative
 
 | Version | Contenu |
 |---------|---------|
-| **MVP** | Photo → diagnostic → estimation → annuaire contact |
+| **MVP** | Photo → confirmation catégorie/panne → estimation → annuaire |
 | **v1.1** | Tutoriels DIY si panne simple |
 | **v1.2** | Élargissement des catégories / zones |
 | **v2** | Compte utilisateur, suivi, partenariats renforcés |

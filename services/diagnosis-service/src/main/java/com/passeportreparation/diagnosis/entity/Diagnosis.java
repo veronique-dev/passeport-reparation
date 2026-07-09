@@ -1,6 +1,7 @@
 package com.passeportreparation.diagnosis.entity;
 
 import com.passeportreparation.common.enums.ApplianceCategory;
+import com.passeportreparation.common.enums.IssueCode;
 import com.passeportreparation.common.enums.RepairVerdict;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,6 +31,10 @@ public class Diagnosis {
     private ApplianceCategory category;
 
     private String applianceLabel;
+
+    @Enumerated(EnumType.STRING)
+    private IssueCode issueCode;
+
     private String probableIssue;
     private double confidence;
 
@@ -41,6 +46,9 @@ public class Diagnosis {
     private RepairVerdict verdict;
 
     private boolean supported;
+
+    @Builder.Default
+    private boolean userConfirmed = true;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;

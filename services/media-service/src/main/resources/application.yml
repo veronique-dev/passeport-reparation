@@ -12,7 +12,7 @@ spring:
 app:
   media:
     storage-path: ${MEDIA_STORAGE_PATH:./data/media}
-    public-base-url: ${MEDIA_PUBLIC_BASE_URL:http://localhost:8083}
+    public-base-url: ${MEDIA_PUBLIC_BASE_URL:http://localhost:8090}
 
 springdoc:
   api-docs:

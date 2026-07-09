@@ -2,7 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { DiagnosisResponse, MediaUploadResponse, Repairer, ApplianceCategory } from '../models';
+import {
+  ApplianceCategory,
+  DiagnosisResponse,
+  IssueCode,
+  IssueOption,
+  MediaUploadResponse,
+  Repairer
+} from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -16,9 +23,23 @@ export class ApiService {
     return this.http.post<MediaUploadResponse>(`${this.base}/api/media`, form);
   }
 
-  createDiagnosis(mediaId: string, latitude?: number, longitude?: number): Observable<DiagnosisResponse> {
+  getIssues(category: ApplianceCategory): Observable<IssueOption[]> {
+    return this.http.get<IssueOption[]>(`${this.base}/api/diagnoses/issues`, {
+      params: { category }
+    });
+  }
+
+  createDiagnosis(
+    mediaId: string,
+    category: ApplianceCategory,
+    issueCode?: IssueCode | null,
+    latitude?: number,
+    longitude?: number
+  ): Observable<DiagnosisResponse> {
     return this.http.post<DiagnosisResponse>(`${this.base}/api/diagnoses`, {
       mediaId,
+      category,
+      issueCode: issueCode || null,
       latitude,
       longitude
     });

@@ -2,6 +2,7 @@ package com.passeportreparation.diagnosis.config;
 
 import com.passeportreparation.common.dto.ApiError;
 import com.passeportreparation.diagnosis.service.DiagnosisNotFoundException;
+import com.passeportreparation.diagnosis.service.InvalidDiagnosisRequestException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,11 @@ public class DiagnosisExceptionHandler {
     @ExceptionHandler(DiagnosisNotFoundException.class)
     public ResponseEntity<ApiError> notFound(DiagnosisNotFoundException ex, HttpServletRequest request) {
         return error(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(InvalidDiagnosisRequestException.class)
+    public ResponseEntity<ApiError> invalid(InvalidDiagnosisRequestException ex, HttpServletRequest request) {
+        return error(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
