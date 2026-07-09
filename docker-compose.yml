@@ -1,0 +1,81 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: passeport
+      POSTGRES_PASSWORD: passeport123
+      POSTGRES_DB: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U passeport -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  media-service:
+    build:
+      context: .
+      dockerfile: services/media-service/Dockerfile
+    environment:
+      MEDIA_STORAGE_PATH: /data/media
+      MEDIA_PUBLIC_BASE_URL: http://localhost:8080
+    volumes:
+      - media_data:/data/media
+    depends_on: []
+
+  diagnosis-service:
+    build:
+      context: .
+      dockerfile: services/diagnosis-service/Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/diagnosis_db
+      SPRING_DATASOURCE_USERNAME: passeport
+      SPRING_DATASOURCE_PASSWORD: passeport123
+      VISION_PROVIDER: mock
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  repairer-service:
+    build:
+      context: .
+      dockerfile: services/repairer-service/Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/repairer_db
+      SPRING_DATASOURCE_USERNAME: passeport
+      SPRING_DATASOURCE_PASSWORD: passeport123
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  gateway:
+    build:
+      context: .
+      dockerfile: services/gateway/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      MEDIA_SERVICE_URL: http://media-service:8083
+      DIAGNOSIS_SERVICE_URL: http://diagnosis-service:8081
+      REPAIRER_SERVICE_URL: http://repairer-service:8082
+    depends_on:
+      - media-service
+      - diagnosis-service
+      - repairer-service
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - gateway
+
+volumes:
+  postgres_data:
+  media_data:

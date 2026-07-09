@@ -1,0 +1,21 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: media-service
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+app:
+  media:
+    storage-path: ${MEDIA_STORAGE_PATH:./data/media}
+    public-base-url: ${MEDIA_PUBLIC_BASE_URL:http://localhost:8083}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html

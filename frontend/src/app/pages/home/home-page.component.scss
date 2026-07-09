@@ -1,0 +1,129 @@
+.hero {
+  padding: 2.5rem 0 1rem;
+  animation: rise 0.7s ease both;
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+h1 {
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  line-height: 1.05;
+  max-width: 12ch;
+}
+
+.lead {
+  margin-top: 1rem;
+  max-width: 38rem;
+  color: var(--ink-muted);
+  font-size: 1.08rem;
+}
+
+.drop {
+  margin-top: 2rem;
+  min-height: 280px;
+  border: 1.5px dashed rgba(15, 107, 76, 0.35);
+  border-radius: calc(var(--radius) + 6px);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.drop:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.drop strong {
+  font-size: 1.15rem;
+}
+
+.drop span {
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+}
+
+.drop img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  display: block;
+}
+
+.actions {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.85rem 1.35rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: #f7fff9;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.error {
+  margin-top: 1rem;
+  color: var(--danger);
+}
+
+.hint {
+  margin-top: 1.5rem;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .drop {
+    min-height: 220px;
+  }
+
+  .drop img {
+    height: 240px;
+  }
+}

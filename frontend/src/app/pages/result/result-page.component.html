@@ -1,0 +1,63 @@
+<section class="result container" *ngIf="diagnosis as d">
+  <div class="result__grid">
+    <div class="visual" *ngIf="previewUrl">
+      <img [src]="previewUrl" alt="Photo analysée" />
+    </div>
+
+    <div class="panel">
+      <p class="eyebrow">Diagnostic</p>
+      <h1>{{ d.applianceLabel }}</h1>
+      <p class="issue">{{ d.probableIssue }}</p>
+
+      <ng-container *ngIf="d.supported && d.estimate; else unsupported">
+        <div class="verdict" [attr.data-verdict]="d.verdict">
+          <span>Verdict</span>
+          <strong>{{ verdictLabel(d.verdict) }}</strong>
+        </div>
+
+        <div class="costs">
+          <div>
+            <span>Réparation</span>
+            <strong>{{ d.estimate.repairLow }}–{{ d.estimate.repairHigh }} €</strong>
+          </div>
+          <div>
+            <span>Remplacement</span>
+            <strong>~{{ d.estimate.replacementApprox }} €</strong>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #unsupported>
+        <p class="unsupported">
+          Catégorie non supportée pour l’instant. Le MVP couvre lave-linge, lave-vaisselle et four.
+        </p>
+      </ng-template>
+
+      <p class="disclaimer">{{ d.disclaimer }}</p>
+    </div>
+  </div>
+
+  <section class="repairers" *ngIf="d.supported">
+    <h2>Réparateurs à proximité</h2>
+    <p class="sub">Zone test · Lyon — contact en un clic</p>
+
+    <ul *ngIf="repairers.length; else empty">
+      <li *ngFor="let r of repairers">
+        <div>
+          <strong>{{ r.name }}</strong>
+          <span>{{ r.city }}<ng-container *ngIf="r.distanceKm != null"> · {{ r.distanceKm }} km</ng-container></span>
+        </div>
+        <div class="contacts">
+          <a *ngIf="r.phone" [href]="telHref(r.phone)">Appeler</a>
+          <a *ngIf="r.email" [href]="mailHref(r.email)">Email</a>
+          <a *ngIf="r.whatsapp" [href]="waHref(r.whatsapp)" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+      </li>
+    </ul>
+    <ng-template #empty>
+      <p class="empty">Aucun réparateur trouvé pour cette catégorie dans la zone test.</p>
+    </ng-template>
+  </section>
+
+  <button type="button" class="btn" (click)="restart()">Nouvelle photo</button>
+</section>

@@ -1,0 +1,58 @@
+:root {
+  --bg: #f3efe6;
+  --bg-deep: #e8e0d0;
+  --ink: #1c2a24;
+  --ink-muted: #5a6b62;
+  --accent: #0f6b4c;
+  --accent-soft: #d7ebe2;
+  --warn: #9a5b12;
+  --danger: #8b2e2e;
+  --surface: rgba(255, 252, 246, 0.88);
+  --line: rgba(28, 42, 36, 0.12);
+  --shadow: 0 18px 50px rgba(28, 42, 36, 0.08);
+  --radius: 18px;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(15, 107, 76, 0.12), transparent 42%),
+    radial-gradient(circle at 88% 8%, rgba(154, 91, 18, 0.10), transparent 36%),
+    linear-gradient(160deg, var(--bg), var(--bg-deep));
+  background-attachment: fixed;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+button, a {
+  font-family: inherit;
+}
+
+.container {
+  width: min(920px, calc(100% - 2rem));
+  margin: 0 auto;
+}
