@@ -7,6 +7,7 @@ COPY services/diagnosis-service/pom.xml services/diagnosis-service/pom.xml
 COPY services/repairer-service/pom.xml services/repairer-service/pom.xml
 COPY services/media-service/pom.xml services/media-service/pom.xml
 COPY services/auth-service/pom.xml services/auth-service/pom.xml
+COPY e2e-tests/pom.xml e2e-tests/pom.xml
 RUN mvn -N -q install
 COPY common/src common/src
 COPY services/gateway/src services/gateway/src

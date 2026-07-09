@@ -135,7 +135,7 @@ Détail cadrage : [`docs/02-architecture.md`](docs/02-architecture.md), [`docs/0
 | Frontend | Angular 16 |
 | Backend | Java 21, Spring Boot 3.3, Maven |
 | Auth | Spring Security, JWT + refresh, BCrypt |
-| Email | SMTP / Mailhog (local) |
+| Email | SMTP / Mailpit (local, UI :8025) |
 | Base de données | PostgreSQL 16 (DB par service) |
 | Conteneurs | Docker / Docker Compose |
 | Architecture | Microservices |
@@ -173,7 +173,7 @@ passeport-reparation/
 
 - Java 21, Maven 3.9+
 - Node 18+, Angular CLI 16
-- Docker (optionnel mais recommandé pour Postgres + Mailhog)
+- Docker (optionnel mais recommandé pour Postgres + Mailpit)
 
 ### 1. Variables d’environnement
 
@@ -183,7 +183,8 @@ Copier [`.env.example`](.env.example) vers `.env` si besoin (`JWT_SECRET`, visio
 
 ```bash
 docker compose up -d postgres mailhog
-# Postgres :5434 · Mailhog UI : http://localhost:8025 · SMTP :1025
+# Postgres :5434 · Mailpit UI : http://localhost:8025 · SMTP :1025
+# (service Compose nommé mailhog, image Mailpit)
 ```
 
 Si le volume Postgres existait **avant** `auth_db` :
@@ -227,7 +228,7 @@ docker compose up --build
 
 - Frontend : http://localhost:4201  
 - API : http://localhost:8090  
-- Mailhog : http://localhost:8025  
+- Mailpit : http://localhost:8025  
 
 ## API (via gateway)
 
@@ -267,7 +268,7 @@ Le diagnostic s’appuie sur la **confirmation utilisateur** (catégorie + panne
 | Variable | Rôle |
 |----------|------|
 | `JWT_SECRET` | Secret partagé auth + diagnosis (min. 32 caractères) |
-| `MAIL_ENABLED` | `true` en Docker (Mailhog) · `false` → liens loggés |
+| `MAIL_ENABLED` | `true` en Docker (Mailpit) · `false` → liens loggés |
 | `APP_FRONTEND_URL` | Base des liens email (confirm / reset) |
 
 Voir [`.env.example`](.env.example), [`docs/05-ai-vision-branch.md`](docs/05-ai-vision-branch.md) et [`docs/06-compte-utilisateur.md`](docs/06-compte-utilisateur.md).

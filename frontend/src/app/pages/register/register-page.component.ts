@@ -31,8 +31,32 @@ export class RegisterPageComponent {
       },
       error: (err) => {
         this.loading = false;
-        this.error = err?.error?.message || 'Inscription impossible.';
+        this.error = this.describeError(err);
       }
+    });
+  }
+
+  goLogin(): void {
+    void this.router.navigateByUrl('/connexion');
+  }
+
+  private describeError(err: any): string {
+    const apiMessage = err?.error?.message;
+    if (apiMessage) {
+      return apiMessage;
+    }
+    if (err?.status === 0) {
+      return 'API indisponible. Vérifie que la gateway tourne sur http://localhost:8090.';
+    }
+    if (err?.status === 404) {
+      return 'Service compte indisponible (auth-service). Lance docker compose up -d auth-service mailhog, puis redémarre la gateway.';
+    }
+    if (err?.status === 403 || err?.status >= 500) {
+      return 'Inscription temporairement indisponible. Vérifie que auth-service et Mailpit tournent (docker compose up -d auth-service mailhog).';
+    }
+    return 'Inscription impossible.';
+  }
+}
     });
   }
 
