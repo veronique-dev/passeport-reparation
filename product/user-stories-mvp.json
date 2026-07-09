@@ -1,0 +1,212 @@
+{
+  "project": "Passeport de réparation",
+  "version": "MVP 1.0",
+  "persona": {
+    "id": "P-01",
+    "name": "Propriétaire d'appareil en panne",
+    "description": "Utilisateur anonyme sans compte, qui veut décider rapidement s'il faut réparer et qui contacter."
+  },
+  "journey": "Photo → Catégorie + panne → Verdict € → Contacter un réparateur",
+  "epics": [
+    {
+      "id": "EPIC-1",
+      "name": "Capture & confirmation",
+      "goal": "Permettre à l'utilisateur d'importer une photo et de confirmer appareil + panne.",
+      "stories": ["US-01", "US-02", "US-03", "US-04"]
+    },
+    {
+      "id": "EPIC-2",
+      "name": "Estimation & verdict",
+      "goal": "Fournir une fourchette de coût et un verdict réparer / arbitrer / remplacer.",
+      "stories": ["US-05", "US-06", "US-07"]
+    },
+    {
+      "id": "EPIC-3",
+      "name": "Annuaire réparateurs",
+      "goal": "Proposer des réparateurs locaux contactables en un clic.",
+      "stories": ["US-08", "US-09"]
+    },
+    {
+      "id": "EPIC-4",
+      "name": "Parcours résultat",
+      "goal": "Afficher un passeport clair et permettre de recommencer.",
+      "stories": ["US-10", "US-11"]
+    }
+  ],
+  "stories": [
+    {
+      "id": "US-01",
+      "title": "Importer une photo de l'appareil",
+      "type": "Story",
+      "priority": "Must",
+      "epic": "EPIC-1",
+      "persona": "Propriétaire d'appareil en panne",
+      "userStory": "En tant que propriétaire d'un appareil cassé, je veux importer une photo de mon appareil, afin de contextualiser ma demande de passeport de réparation.",
+      "labels": ["frontend", "media"],
+      "acceptanceCriteria": [
+        "Given je suis sur l'accueil, When j'importe un fichier JPEG/PNG/WEBP, Then un aperçu de la photo s'affiche",
+        "Given une photo est sélectionnée, When je clique sur Changer, Then je peux en choisir une autre",
+        "Given un type de fichier non supporté côté API, When l'upload échoue, Then un message d'erreur explicite s'affiche",
+        "Given l'API média est indisponible, When je lance l'estimation, Then un message indique que l'API est indisponible"
+      ]
+    },
+    {
+      "id": "US-02",
+      "title": "Confirmer la catégorie d'appareil",
+      "type": "Story",
+      "priority": "Must",
+      "epic": "EPIC-1",
+      "persona": "Propriétaire d'appareil en panne",
+      "userStory": "En tant que propriétaire, je veux indiquer moi-même la catégorie de mon appareil, afin d'éviter une mauvaise classification automatique.",
+      "labels": ["frontend", "diagnosis"],
+      "acceptanceCriteria": [
+        "Given une photo est importée, When l'écran de confirmation s'affiche, Then je vois les choix Lave-linge, Lave-vaisselle, Four, Autre",
+        "Given je sélectionne une catégorie supportée, When le choix est validé, Then la liste des symptômes correspondants est chargée",
+        "Given aucune catégorie n'est sélectionnée, When j'essaie d'obtenir mon passeport, Then le bouton reste désactivé"
+      ]
+    },
+    {
+      "id": "US-03",
+      "title": "Sélectionner le type de panne",
+      "type": "Story",
+      "priority": "Must",
+      "epic": "EPIC-1",
+      "persona": "Propriétaire d'appareil en panne",
+      "userStory": "En tant que propriétaire, je veux choisir le symptôme le plus proche de ma panne, afin d'obtenir une estimation de coût plus réaliste.",
+      "labels": ["frontend", "diagnosis", "pricing"],
+      "acceptanceCriteria": [
+        "Given une catégorie supportée est choisie, When l'API /api/diagnoses/issues répond, Then je vois une liste de pannes",
+        "Given la liste est chargée, When aucune panne n'est sélectionnée, Then le bouton Obtenir mon passeport reste désactivé",
+        "Given je sélectionne une panne, When je lance l'estimation, Then le issueCode correspondant est envoyé à l'API"
+      ]
+    },
+    {
+      "id": "US-04",
+      "title": "Déclarer un appareil hors périmètre",
+      "type": "Story",
+      "priority": "Must",
+      "epic": "EPIC-1",
+      "persona": "Propriétaire d'appareil en panne",
+      "userStory": "En tant que propriétaire, je veux pouvoir indiquer que mon appareil n'est pas dans le périmètre MVP, afin de ne pas recevoir une estimation trompeuse.",
+      "labels": ["frontend", "diagnosis"],
+      "acceptanceCriteria": [
+        "Given je choisis Autre, When l'écran se met à jour, Then un message explique que la catégorie est hors périmètre",
+        "Given Autre est sélectionné, When j'obtiens mon passeport, Then le résultat indique Hors périmètre sans fourchette ni réparateurs",
+        "Given un appareil hors scope, When je choisis Autre, Then je ne vois jamais un verdict d'une catégorie supportée"
+      ]
+    },
+    {
+      "id": "US-05",
+      "title": "Obtenir une estimation de coût",
+      "type": "Story",
+      "priority": "Must",
+      "epic": "EPIC-2",
+      "persona": "Propriétaire d'appareil en panne",
+      "userStory": "En tant que propriétaire, je veux voir une fourchette de réparation et un ordre de grandeur de remplacement, afin de décider rapidement si la réparation est rentable.",
+      "labels": ["diagnosis", "pricing"],
+      "acceptanceCriteria": [
+        "Given catégorie + panne supportées, When POST /api/diagnoses réussit, Then la réponse contient repairLow, repairHigh, replacementApprox en EUR",
+        "Given deux pannes différentes d'une même catégorie, When je compare les estimations, Then les fourchettes peuvent différer",
+        "Given une panne simple, When j'obtiens l'estimation, Then la fourchette est plus basse qu'une panne carte électronique"
+      ]
+    },
+    {
+      "id": "US-06",
+      "title": "Voir le verdict réparer / à arbitrer / remplacer",
+      "type": "Story",
+      "priority": "Must",
+      "epic": "EPIC-2",
+      "persona": "Propriétaire d'appareil en panne",
+      "userStory": "En tant que propriétaire, je veux un verdict simple, afin de savoir quoi faire sans lire un devis technique.",
+      "labels": ["diagnosis", "frontend"],
+      "acceptanceCriteria": [
+        "Given une estimation supportée, When j'arrive sur le résultat, Then le verdict affiché est Réparer, À arbitrer ou Remplacer",
+        "Given le milieu de fourchette dépasse 70% du remplacement, When le verdict est calculé, Then le système force Remplacer",
+        "Given une panne catalogue avec verdict par défaut, When le ratio est ≤ 70%, Then le verdict catalogue est conservé"
+      ]
+    },
+    {
+      "id": "US-07",
+      "title": "Afficher le disclaimer d'estimation",
+      "type": "Story",
+      "priority": "Must",
+      "epic": "EPIC-2",
+      "persona": "Propriétaire d'appareil en panne",
+      "userStory": "En tant que propriétaire, je veux être informé que l'estimation n'est pas un devis, afin de ne pas confondre l'outil avec un engagement commercial.",
+      "labels": ["diagnosis", "frontend", "legal"],
+      "acceptanceCriteria": [
+        "Given un diagnostic est affiché, When je consulte le passeport, Then un disclaimer indique que l'estimation est indicative",
+        "Given le disclaimer, When je lis le texte, Then il précise qu'un réparateur confirmera sur place"
+      ]
+    },
+    {
+      "id": "US-08",
+      "title": "Voir les réparateurs de la zone test",
+      "type": "Story",
+      "priority": "Must",
+      "epic": "EPIC-3",
+      "persona": "Propriétaire d'appareil en panne",
+      "userStory": "En tant que propriétaire, je veux voir une liste de réparateurs locaux pour ma catégorie, afin de savoir qui contacter.",
+      "labels": ["repairer", "frontend"],
+      "acceptanceCriteria": [
+        "Given un diagnostic supporté, When le résultat s'affiche, Then je vois des réparateurs Lyon filtrés par catégorie",
+        "Given aucun réparateur ne correspond, When la liste est vide, Then un message aucun réparateur trouvé s'affiche",
+        "Given un diagnostic hors périmètre, When le résultat s'affiche, Then la section réparateurs n'apparaît pas"
+      ]
+    },
+    {
+      "id": "US-09",
+      "title": "Contacter un réparateur en un clic",
+      "type": "Story",
+      "priority": "Must",
+      "epic": "EPIC-3",
+      "persona": "Propriétaire d'appareil en panne",
+      "userStory": "En tant que propriétaire, je veux appeler, écrire ou ouvrir WhatsApp depuis la fiche, afin de passer à l'action sans créer de compte.",
+      "labels": ["repairer", "frontend"],
+      "acceptanceCriteria": [
+        "Given un réparateur a un téléphone, When je clique Appeler, Then le lien tel: s'ouvre",
+        "Given un email est présent, When je clique Email, Then le lien mailto: s'ouvre",
+        "Given un WhatsApp est présent, When je clique WhatsApp, Then le lien wa.me s'ouvre dans un nouvel onglet",
+        "Given le MVP, When je consulte l'annuaire, Then il n'y a ni réservation, ni paiement, ni matching marketplace"
+      ]
+    },
+    {
+      "id": "US-10",
+      "title": "Consulter mon passeport de réparation",
+      "type": "Story",
+      "priority": "Must",
+      "epic": "EPIC-4",
+      "persona": "Propriétaire d'appareil en panne",
+      "userStory": "En tant que propriétaire, je veux un écran résultat clair (photo, appareil, panne, coûts, verdict), afin de comprendre la décision en un coup d'œil.",
+      "labels": ["frontend", "ux"],
+      "acceptanceCriteria": [
+        "Given un diagnostic réussi, When je suis redirigé vers /resultat, Then je vois photo, appareil, symptôme, coûts et verdict",
+        "Given j'ouvre /resultat sans diagnostic en session, When la page charge, Then je suis renvoyé vers l'accueil",
+        "Given le diagnostic vient d'une confirmation utilisateur, When le résultat s'affiche, Then un libellé indique que c'est confirmé par l'utilisateur"
+      ]
+    },
+    {
+      "id": "US-11",
+      "title": "Relancer une nouvelle estimation",
+      "type": "Story",
+      "priority": "Must",
+      "epic": "EPIC-4",
+      "persona": "Propriétaire d'appareil en panne",
+      "userStory": "En tant que propriétaire, je veux recommencer avec une nouvelle photo, afin de traiter un autre appareil ou corriger mon choix.",
+      "labels": ["frontend"],
+      "acceptanceCriteria": [
+        "Given je suis sur le résultat, When je clique Nouvelle photo, Then la session résultat est effacée et je reviens à l'accueil",
+        "Given je reviens à l'accueil, When le formulaire s'affiche, Then aucune catégorie/panne précédente n'est pré-sélectionnée de façon bloquante"
+      ]
+    }
+  ],
+  "outOfScope": [
+    "Reconnaissance IA automatique de l'objet",
+    "Compte utilisateur / authentification",
+    "Devis en ligne, paiement, réservation",
+    "Tutoriels DIY",
+    "Toutes les catégories d'appareils",
+    "Géolocalisation GPS réelle multi-villes",
+    "Suivi de réparation"
+  ]
+}

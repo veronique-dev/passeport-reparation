@@ -13,7 +13,7 @@
 
     <artifactId>diagnosis-service</artifactId>
     <name>diagnosis-service</name>
-    <description>Diagnostic IA et estimation réparer vs remplacer</description>
+    <description>Confirmation catégorie/panne, estimation et verdict</description>
 
     <dependencies>
         <dependency>

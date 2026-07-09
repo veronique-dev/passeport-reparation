@@ -1,0 +1,93 @@
+{
+  "project": "Passeport de réparation",
+  "version": "MVP 1.0",
+  "levels": ["unit", "manual-api", "manual-ui"],
+  "coverage": [
+    {
+      "storyId": "US-01",
+      "title": "Importer une photo de l'appareil",
+      "automated": [],
+      "manual": ["UI import JPEG/PNG/WEBP", "POST /api/media"]
+    },
+    {
+      "storyId": "US-02",
+      "title": "Confirmer la catégorie d'appareil",
+      "automated": [],
+      "manual": ["UI sélection catégorie"]
+    },
+    {
+      "storyId": "US-03",
+      "title": "Sélectionner le type de panne",
+      "automated": [
+        "PricingCatalogTest.us03_listsIssuesForOven",
+        "PricingCatalogTest.us03_returnsEmptyForUnsupported",
+        "DiagnosisServiceTest.us03_listsIssuesViaService"
+      ],
+      "manual": ["UI liste symptômes", "GET /api/diagnoses/issues"]
+    },
+    {
+      "storyId": "US-04",
+      "title": "Déclarer un appareil hors périmètre",
+      "automated": [
+        "DiagnosisServiceTest.us04_unsupportedReturnsNoEstimate"
+      ],
+      "manual": ["UI choix Autre", "POST category=UNSUPPORTED"]
+    },
+    {
+      "storyId": "US-05",
+      "title": "Obtenir une estimation de coût",
+      "automated": [
+        "PricingCatalogTest.us05_doorSealCheaperThanElectronicBoard",
+        "PricingCatalogTest.us05_fallsBackToUnknownWhenIssueCodeMissing",
+        "PricingCatalogTest.us05_rejectsMismatchedIssueAndCategory",
+        "DiagnosisServiceTest.us05_returnsCostEstimateForDrainPump",
+        "DiagnosisServiceTest.us05_rejectsInvalidIssueForCategory"
+      ],
+      "manual": ["Comparer joint vs carte électronique"]
+    },
+    {
+      "storyId": "US-06",
+      "title": "Voir le verdict réparer / à arbitrer / remplacer",
+      "automated": [
+        "VerdictCalculatorTest.us06_keepsCatalogVerdictWhenRatioBelowThreshold",
+        "VerdictCalculatorTest.us06_forcesReplaceWhenMidExceedsSeventyPercentOfReplacement",
+        "VerdictCalculatorTest.us06_keepsArbitrateForElectronicBoardInCatalog",
+        "DiagnosisServiceTest.us06_and_us07_persistVerdictAndDisclaimer"
+      ],
+      "manual": ["UI badge verdict"]
+    },
+    {
+      "storyId": "US-07",
+      "title": "Afficher le disclaimer d'estimation",
+      "automated": [
+        "DiagnosisServiceTest.us06_and_us07_persistVerdictAndDisclaimer",
+        "DiagnosisServiceTest.us04_unsupportedReturnsNoEstimate"
+      ],
+      "manual": ["UI disclaimer visible"]
+    },
+    {
+      "storyId": "US-08",
+      "title": "Voir les réparateurs de la zone test",
+      "automated": [],
+      "manual": ["UI liste Lyon", "GET /api/repairers"]
+    },
+    {
+      "storyId": "US-09",
+      "title": "Contacter un réparateur en un clic",
+      "automated": [],
+      "manual": ["tel:", "mailto:", "wa.me"]
+    },
+    {
+      "storyId": "US-10",
+      "title": "Consulter mon passeport de réparation",
+      "automated": [],
+      "manual": ["UI /resultat", "redirection sans session"]
+    },
+    {
+      "storyId": "US-11",
+      "title": "Relancer une nouvelle estimation",
+      "automated": [],
+      "manual": ["Bouton Nouvelle photo"]
+    }
+  ]
+}

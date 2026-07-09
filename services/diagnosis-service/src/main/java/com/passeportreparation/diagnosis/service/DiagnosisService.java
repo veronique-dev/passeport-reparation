@@ -9,37 +9,32 @@ import com.passeportreparation.common.enums.IssueCode;
 import com.passeportreparation.common.enums.RepairVerdict;
 import com.passeportreparation.diagnosis.entity.Diagnosis;
 import com.passeportreparation.diagnosis.pricing.IssuePricing;
+import com.passeportreparation.diagnosis.pricing.PricingCatalog;
+import com.passeportreparation.diagnosis.pricing.VerdictCalculator;
 import com.passeportreparation.diagnosis.repository.DiagnosisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
+/**
+ * Implémentation métier des US-03 → US-07 :
+ * liste des pannes, estimation par grille, verdict, hors périmètre, disclaimer.
+ */
 @Service
 @RequiredArgsConstructor
 public class DiagnosisService {
 
-    private static final String DISCLAIMER =
+    static final String DISCLAIMER =
             "Estimation indicative basée sur le type de panne déclaré — ce n'est pas un devis. Un réparateur confirmera sur place.";
 
     private final DiagnosisRepository repository;
+    private final PricingCatalog pricingCatalog;
 
     public List<IssueOptionDto> listIssues(ApplianceCategory category) {
-        if (category == null || category == ApplianceCategory.UNSUPPORTED) {
-            return List.of();
-        }
-        return IssuePricing.CATALOG.stream()
-                .filter(item -> item.category() == category)
-                .map(item -> IssueOptionDto.builder()
-                        .code(item.code())
-                        .label(item.issueLabel())
-                        .category(item.category())
-                        .build())
-                .toList();
+        return pricingCatalog.optionsFor(category);
     }
 
     @Transactional
@@ -62,12 +57,12 @@ public class DiagnosisService {
             return toResponse(repository.save(entity), null);
         }
 
-        IssuePricing pricing = resolvePricing(category, request.getIssueCode())
+        IssuePricing pricing = pricingCatalog.find(category, request.getIssueCode())
                 .orElseThrow(() -> new InvalidDiagnosisRequestException(
                         "Type de panne invalide pour la catégorie " + category));
 
         CostEstimateDto estimate = pricing.toEstimate();
-        RepairVerdict verdict = refineVerdict(pricing);
+        RepairVerdict verdict = VerdictCalculator.refine(pricing);
 
         Diagnosis entity = Diagnosis.builder()
                 .mediaId(request.getMediaId())
@@ -88,7 +83,7 @@ public class DiagnosisService {
     }
 
     @Transactional(readOnly = true)
-    public DiagnosisResponse getById(java.util.UUID id) {
+    public DiagnosisResponse getById(UUID id) {
         Diagnosis entity = repository.findById(id)
                 .orElseThrow(() -> new DiagnosisNotFoundException(id));
         CostEstimateDto estimate = null;
@@ -101,33 +96,6 @@ public class DiagnosisService {
                     .build();
         }
         return toResponse(entity, estimate);
-    }
-
-    private static Optional<IssuePricing> resolvePricing(ApplianceCategory category, IssueCode issueCode) {
-        if (issueCode == null) {
-            return IssuePricing.CATALOG.stream()
-                    .filter(item -> item.category() == category)
-                    .filter(item -> item.code().name().endsWith("_UNKNOWN"))
-                    .findFirst();
-        }
-        return IssuePricing.CATALOG.stream()
-                .filter(item -> item.code() == issueCode && item.category() == category)
-                .findFirst();
-    }
-
-    /**
-     * Affinage : si le milieu de fourchette dépasse 70% du remplacement → REPLACE,
-     * sinon on garde le verdict catalogue (souvent plus pertinent que le seul ratio).
-     */
-    private static RepairVerdict refineVerdict(IssuePricing pricing) {
-        BigDecimal mid = pricing.repairLow()
-                .add(pricing.repairHigh())
-                .divide(BigDecimal.valueOf(2), 2, RoundingMode.HALF_UP);
-        BigDecimal ratio = mid.divide(pricing.replacementApprox(), 4, RoundingMode.HALF_UP);
-        if (ratio.compareTo(new BigDecimal("0.70")) > 0) {
-            return RepairVerdict.REPLACE;
-        }
-        return pricing.defaultVerdict();
     }
 
     private static DiagnosisResponse toResponse(Diagnosis entity, CostEstimateDto estimate) {

@@ -16,19 +16,16 @@ En ~30 secondes, à partir d’une photo :
 
 ## Fonctionnalités MVP
 
-### 1. Prise de photo + diagnostic IA
+### 1. Photo + confirmation appareil / panne
 
-- Capture ou import d’une photo de l’appareil / de la panne
-- Identification de l’objet et de la panne probable via IA
-- **Périmètre v1 limité à 3 familles** pour maximiser la précision :
-  - Lave-linge
-  - Lave-vaisselle
-  - Four
-- Hors périmètre → message explicite : catégorie non supportée pour l’instant
+- Import d’une photo de l’appareil
+- Confirmation manuelle de la catégorie (lave-linge, lave-vaisselle, four, autre)
+- Sélection du type de panne pour affiner l’estimation
+- Hors périmètre → message explicite, sans estimation trompeuse
 
 ### 2. Estimation réparer vs remplacer
 
-- Fourchette de coût de réparation (basse / haute)
+- Fourchette de coût de réparation selon le type de panne
 - Ordre de grandeur du remplacement
 - Verdict simple : **réparer** / **à arbitrer** / **remplacer**
 - Disclaimer : estimation indicative, pas un devis
@@ -39,6 +36,17 @@ En ~30 secondes, à partir d’une photo :
 - Filtrage par famille d’appareil
 - Contact en un clic (téléphone / email / WhatsApp)
 - Pas de marketplace, pas de réservation intégrée, pas de paiement
+
+## User stories
+
+Documentation PO / architecture / QA :
+
+- [`docs/02-architecture.md`](docs/02-architecture.md)
+- [`docs/03-user-stories.md`](docs/03-user-stories.md)
+- [`docs/04-plan-de-test.md`](docs/04-plan-de-test.md)
+- [`product/user-stories-mvp.json`](product/user-stories-mvp.json)
+- [`product/user-stories-mvp.csv`](product/user-stories-mvp.csv)
+- [`product/test-matrix.json`](product/test-matrix.json)
 
 ## Parcours utilisateur
 
@@ -70,7 +78,7 @@ Photo → Catégorie + panne → Verdict € → Contacter un réparateur
 | Service | Port | Responsabilité |
 |---------|------|----------------|
 | **gateway** | 8090 | Entrée unique, routage, CORS |
-| **diagnosis-service** | 8081 | Vision (mock) + estimation + verdict |
+| **diagnosis-service** | 8081 | Confirmation catégorie/panne + estimation + verdict |
 | **repairer-service** | 8082 | Annuaire curaté, filtre catégorie / zone |
 | **media-service** | 8083 | Upload / stockage local des photos |
 | **frontend** | 4200 (dev) / 4201 (Docker) | SPA Angular |
