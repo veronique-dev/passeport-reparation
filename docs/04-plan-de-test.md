@@ -13,7 +13,7 @@ Valider le parcours **Photo → Catégorie + panne → Verdict € → Contact r
 
 | Niveau | Description | Où |
 |--------|-------------|-----|
-| **Unitaire** | Catalogue prix, verdict, service diagnostic (Mockito) | `services/diagnosis-service/.../test` |
+| **Unitaire** | Media, diagnosis, repairer (Mockito / filesystem temp) | `services/*/src/test` |
 | **API manuelle** | Curl / Postman via gateway | `http://localhost:8090` |
 | **UI manuelle** | Parcours Angular | `http://localhost:4200` |
 | **E2E auto** | À venir (REST Assured via gateway) | hors scope immédiat |
@@ -22,14 +22,14 @@ Valider le parcours **Photo → Catégorie + panne → Verdict € → Contact r
 
 | US | Titre | Auto | Manuel |
 |----|-------|------|--------|
-| US-01 | Importer une photo | — | UI + `POST /api/media` |
+| US-01 | Importer une photo | `MediaStorageServiceTest` | UI + `POST /api/media` |
 | US-02 | Confirmer catégorie | — | UI |
 | US-03 | Sélectionner panne | `PricingCatalogTest`, `DiagnosisServiceTest.us03_*` | UI + `GET /api/diagnoses/issues` |
 | US-04 | Hors périmètre | `DiagnosisServiceTest.us04_*` | UI « Autre » |
 | US-05 | Estimation coût | `PricingCatalogTest`, `DiagnosisServiceTest.us05_*` | API + UI |
 | US-06 | Verdict | `VerdictCalculatorTest`, `DiagnosisServiceTest.us06_*` | UI |
 | US-07 | Disclaimer | `DiagnosisServiceTest.us06_and_us07_*` | UI |
-| US-08 | Liste réparateurs | — | UI + `GET /api/repairers` |
+| US-08 | Liste réparateurs | `RepairerServiceTest` | UI + `GET /api/repairers` |
 | US-09 | Contact 1 clic | — | UI (tel / mailto / wa.me) |
 | US-10 | Écran passeport | — | UI `/resultat` |
 | US-11 | Nouvelle photo | — | UI |
@@ -94,9 +94,9 @@ curl -s 'http://localhost:8090/api/repairers?category=OVEN&city=Lyon' | jq
 ## Commandes
 
 ```bash
-# Unitaires diagnosis
+# Unitaires diagnosis + media + repairer
 export JAVA_HOME="/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home"
-mvn -pl services/diagnosis-service -am test
+mvn -pl services/diagnosis-service,services/media-service,services/repairer-service -am test
 
 # Stack
 docker compose up -d

@@ -6,7 +6,13 @@
     {
       "storyId": "US-01",
       "title": "Importer une photo de l'appareil",
-      "automated": [],
+      "automated": [
+        "MediaStorageServiceTest.us01_storesPngAndReturnsMediaId",
+        "MediaStorageServiceTest.us01_rejectsEmptyFile",
+        "MediaStorageServiceTest.us01_rejectsUnsupportedContentType",
+        "MediaStorageServiceTest.us01_throwsWhenMediaNotFound",
+        "MediaStorageServiceTest.us01_rejectsPathTraversalMediaId"
+      ],
       "manual": ["UI import JPEG/PNG/WEBP", "POST /api/media"]
     },
     {
@@ -68,13 +74,19 @@
     {
       "storyId": "US-08",
       "title": "Voir les réparateurs de la zone test",
-      "automated": [],
+      "automated": [
+        "RepairerServiceTest.us08_filtersByCategoryAndMapsContactFields",
+        "RepairerServiceTest.us08_returnsEmptyListWhenNoRepairerMatches",
+        "RepairerServiceTest.us08_sortsByDistanceWhenCoordinatesProvided"
+      ],
       "manual": ["UI liste Lyon", "GET /api/repairers"]
     },
     {
       "storyId": "US-09",
       "title": "Contacter un réparateur en un clic",
-      "automated": [],
+      "automated": [
+        "RepairerServiceTest.us08_filtersByCategoryAndMapsContactFields"
+      ],
       "manual": ["tel:", "mailto:", "wa.me"]
     },
     {
