@@ -58,8 +58,10 @@ Documentation PO / architecture / QA :
 - [`docs/04-plan-de-test.md`](docs/04-plan-de-test.md)
 - [`docs/05-ai-vision-branch.md`](docs/05-ai-vision-branch.md) — suggestion IA derrière confirmation
 - [`docs/06-compte-utilisateur.md`](docs/06-compte-utilisateur.md) — compte optionnel + historique
+- [`docs/07-roadmap-v1.2.md`](docs/07-roadmap-v1.2.md) — roadmap v1.2 (stories US-12 → US-22)
 - [`product/user-stories-mvp.json`](product/user-stories-mvp.json)
 - [`product/user-stories-mvp.csv`](product/user-stories-mvp.csv)
+- [`product/user-stories-v1.2.json`](product/user-stories-v1.2.json)
 - [`product/test-matrix.json`](product/test-matrix.json)
 
 ### Tests
@@ -296,8 +298,18 @@ Variable `baseUrl` = `http://localhost:8090`. Pour l’upload, sélectionner `sa
 |---------|---------|
 | **MVP** | Photo → suggestion + confirmation → estimation → annuaire |
 | **v1.1** | Compte optionnel, confirm email, historique Mes passeports |
-| **v1.2** | Tutoriels DIY / élargissement catégories & zones |
+| **v1.2** | Continuité compte, confiance métier, session, vision calibrée — voir [`docs/07-roadmap-v1.2.md`](docs/07-roadmap-v1.2.md) |
 | **v2** | OAuth, suivi réparation, partenariats renforcés |
+
+### v1.2 — vagues (résumé)
+
+| Vague | Focus | Stories |
+|-------|--------|---------|
+| **A** | Continuité compte (claim anonyme, liste enrichie) | US-12, US-13 |
+| **B** | Confiance métier (prix, annuaire) | US-14, US-15 |
+| **C** | Session & sécu (refresh, rate-limit) | US-16, US-17 |
+| **D** | Vision calibrée (seuil confiance, fixtures) | US-18, US-19 |
+| **E** | Clarté & qualité (verdict, docs, E2E auth) | US-20 → US-22 |
 
 ## 🤖 Note sur l'utilisation de l'IA
 

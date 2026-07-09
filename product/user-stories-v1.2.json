@@ -1,0 +1,242 @@
+{
+  "project": "Passeport de réparation",
+  "version": "v1.2",
+  "status": "planned",
+  "baseVersion": "MVP 1.0 + compte optionnel (main)",
+  "goal": "Renforcer continuité compte, confiance métier, session, vision calibrée et qualité — sans rouvrir le hors-scope.",
+  "principles": [
+    "Impact utilisateur d'abord",
+    "Compte reste optionnel",
+    "Confirmation utilisateur = source de vérité",
+    "Une story = un incrément livrable"
+  ],
+  "waves": [
+    {
+      "id": "A",
+      "name": "Continuité compte",
+      "stories": ["US-12", "US-13"]
+    },
+    {
+      "id": "B",
+      "name": "Confiance métier",
+      "stories": ["US-14", "US-15"]
+    },
+    {
+      "id": "C",
+      "name": "Session & sécurité",
+      "stories": ["US-16", "US-17"]
+    },
+    {
+      "id": "D",
+      "name": "Vision calibrée",
+      "stories": ["US-18", "US-19"]
+    },
+    {
+      "id": "E",
+      "name": "Clarté & qualité",
+      "stories": ["US-20", "US-21", "US-22"]
+    }
+  ],
+  "epics": [
+    {
+      "id": "EPIC-5",
+      "name": "Continuité compte",
+      "stories": ["US-12", "US-13"]
+    },
+    {
+      "id": "EPIC-6",
+      "name": "Confiance métier",
+      "stories": ["US-14", "US-15"]
+    },
+    {
+      "id": "EPIC-7",
+      "name": "Session & sécurité",
+      "stories": ["US-16", "US-17"]
+    },
+    {
+      "id": "EPIC-8",
+      "name": "Vision calibrée",
+      "stories": ["US-18", "US-19"]
+    },
+    {
+      "id": "EPIC-9",
+      "name": "Clarté & qualité",
+      "stories": ["US-20", "US-21", "US-22"]
+    }
+  ],
+  "outOfScope": [
+    "OAuth Google/Apple",
+    "Compte obligatoire",
+    "Marketplace / devis / paiement",
+    "Tutoriels DIY",
+    "GPS multi-villes",
+    "Suivi de réparation"
+  ],
+  "stories": [
+    {
+      "id": "US-12",
+      "title": "Rattacher mon dernier passeport anonyme après inscription / connexion",
+      "priority": "Must",
+      "wave": "A",
+      "epic": "EPIC-5",
+      "status": "todo",
+      "labels": ["auth", "diagnosis", "frontend"],
+      "userStory": "En tant que propriétaire qui vient de créer un compte, je veux rattacher le dernier diagnostic fait en anonyme, afin de le retrouver dans Mes passeports.",
+      "acceptanceCriteria": [
+        "Given un diagnostic anonyme en session, When je m'inscris ou me connecte, Then il est rattaché à mon userId",
+        "Given le rattachement réussi, When j'ouvre Mes passeports, Then le passeport apparaît",
+        "Given le diagnostic appartient déjà à un autre compte, When je tente le claim, Then l'API refuse sans fuite d'info",
+        "Given aucun diagnostic anonyme, When je me connecte, Then le parcours compte fonctionne normalement"
+      ]
+    },
+    {
+      "id": "US-13",
+      "title": "Enrichir Mes passeports (date, verdict, rouvrir)",
+      "priority": "Must",
+      "wave": "A",
+      "epic": "EPIC-5",
+      "status": "todo",
+      "labels": ["frontend", "diagnosis"],
+      "userStory": "En tant qu'utilisateur connecté, je veux une liste claire de mes passeports, afin de retrouver et rouvrir un diagnostic.",
+      "acceptanceCriteria": [
+        "Given plusieurs passeports, When j'ouvre /mes-passeports, Then tri du plus récent au plus ancien avec date",
+        "Given un item, When je clique, Then j'arrive sur l'écran résultat",
+        "Given liste vide, When la page charge, Then un CTA mène à une nouvelle estimation"
+      ]
+    },
+    {
+      "id": "US-14",
+      "title": "Fiabiliser la grille de prix (sources & fourchettes)",
+      "priority": "Must",
+      "wave": "B",
+      "epic": "EPIC-6",
+      "status": "todo",
+      "labels": ["diagnosis", "product"],
+      "userStory": "En tant que propriétaire, je veux des fourchettes plus crédibles, afin de décider sans me sentir mocké.",
+      "acceptanceCriteria": [
+        "Given chaque IssueCode supporté, When j'estime, Then low/high/replacement sont documentés",
+        "Given la règle des 70%, When mid-repair > 70% remplacement, Then verdict REPLACE",
+        "Given le résultat, When il s'affiche, Then le disclaimer reste visible"
+      ]
+    },
+    {
+      "id": "US-15",
+      "title": "Enrichir l'annuaire (plus de réparateurs / diversité)",
+      "priority": "Should",
+      "wave": "B",
+      "epic": "EPIC-6",
+      "status": "todo",
+      "labels": ["repairer"],
+      "userStory": "En tant que propriétaire à Lyon, je veux davantage de réparateurs pertinents, afin d'avoir un vrai choix de contact.",
+      "acceptanceCriteria": [
+        "Given chaque catégorie supportée, When je liste Lyon, Then au moins 3 fiches actives (ou justification)",
+        "Given une fiche, When je contacte, Then tel/email/WhatsApp en un clic",
+        "Given liste vide, When affichage, Then message explicite"
+      ]
+    },
+    {
+      "id": "US-16",
+      "title": "Renouveler ma session sans me reconnecter",
+      "priority": "Must",
+      "wave": "C",
+      "epic": "EPIC-7",
+      "status": "todo",
+      "labels": ["auth", "frontend"],
+      "userStory": "En tant qu'utilisateur connecté, je veux un refresh transparent, afin d'éviter les 401 surprises.",
+      "acceptanceCriteria": [
+        "Given access expiré et refresh valide, When j'appelle une API protégée, Then refresh + retry",
+        "Given refresh invalide, When renouvellement échoue, Then redirection /connexion",
+        "Given logout, When refresh révoqué, Then il ne peut plus être réutilisé"
+      ]
+    },
+    {
+      "id": "US-17",
+      "title": "Limiter les abus sur login et mot de passe oublié",
+      "priority": "Should",
+      "wave": "C",
+      "epic": "EPIC-7",
+      "status": "todo",
+      "labels": ["auth", "security"],
+      "userStory": "En tant qu'opérateur, je veux un rate-limit basique, afin de limiter brute-force et spam email.",
+      "acceptanceCriteria": [
+        "Given trop de login échoués, When je réessaie, Then 429",
+        "Given trop de forgot-password, When je réessaie, Then 429 sans révéler l'existence de l'email",
+        "Given usage normal, When je me connecte, Then pas de blocage"
+      ]
+    },
+    {
+      "id": "US-18",
+      "title": "Ne préremplir que si la confiance est suffisante",
+      "priority": "Should",
+      "wave": "D",
+      "epic": "EPIC-8",
+      "status": "todo",
+      "labels": ["diagnosis", "frontend", "vision"],
+      "userStory": "En tant que propriétaire, je veux que la suggestion IA incertaine ne s'impose pas, afin de ne pas être biaisé.",
+      "acceptanceCriteria": [
+        "Given confidence < seuil, When suggest revient, Then pas de catégorie forcée",
+        "Given confidence >= seuil, When suggest revient, Then préremplissage éditable",
+        "Given off ou erreur suggest, When upload OK, Then parcours manuel possible"
+      ]
+    },
+    {
+      "id": "US-19",
+      "title": "Jeu de photos de référence pour valider la vision",
+      "priority": "Could",
+      "wave": "D",
+      "epic": "EPIC-8",
+      "status": "todo",
+      "labels": ["qa", "vision"],
+      "userStory": "En tant que PO/QA, je veux un corpus de photos + attendus, afin de valider mock/openai.",
+      "acceptanceCriteria": [
+        "Given 10-20 fixtures documentées, When checklist manuelle, Then catégorie/issue attendues sont claires",
+        "Given provider mock, When rejeu, Then comportement déterministe",
+        "Given openai optionnel, When sous-ensemble, Then écarts notés"
+      ]
+    },
+    {
+      "id": "US-20",
+      "title": "Expliquer le verdict en une phrase",
+      "priority": "Should",
+      "wave": "E",
+      "epic": "EPIC-9",
+      "status": "todo",
+      "labels": ["frontend", "diagnosis"],
+      "userStory": "En tant que propriétaire, je veux comprendre le verdict en une phrase, afin de faire confiance à la reco.",
+      "acceptanceCriteria": [
+        "Given diagnostic supporté, When résultat, Then une phrase explique le verdict",
+        "Given UNSUPPORTED, When résultat, Then pas de fausse explication €"
+      ]
+    },
+    {
+      "id": "US-21",
+      "title": "Aligner la doc produit sur le compte optionnel",
+      "priority": "Must",
+      "wave": "E",
+      "epic": "EPIC-9",
+      "status": "todo",
+      "labels": ["docs"],
+      "userStory": "En tant que lecteur du repo, je veux que persona et stories reflètent le compte optionnel, afin d'éviter l'écart docs/produit.",
+      "acceptanceCriteria": [
+        "Given docs/03 et user-stories-mvp.json, When je lis la persona, Then compte optionnel mentionné",
+        "Given hors-scope, When je lis compte, Then obligatoire/OAuth hors scope, optionnel livré",
+        "Given README, When v1.2, Then lien vers docs/07"
+      ]
+    },
+    {
+      "id": "US-22",
+      "title": "E2E auth minimal (register → confirm → login → mine)",
+      "priority": "Should",
+      "wave": "E",
+      "epic": "EPIC-9",
+      "status": "todo",
+      "labels": ["e2e", "auth"],
+      "userStory": "En tant qu'équipe, je veux un E2E auth via gateway, afin de ne pas régresser le compte.",
+      "acceptanceCriteria": [
+        "Given stack Docker, When E2E auth, Then register+confirm+login+mine passent",
+        "Given diagnostic avec Bearer, When /mine, Then il apparaît",
+        "Given E2E anonyme existant, When tests, Then pas de régression"
+      ]
+    }
+  ]
+}
