@@ -20,10 +20,10 @@ export class HomePageComponent {
   @ViewChild('fileInput') fileInput?: ElementRef<HTMLInputElement>;
 
   readonly categories: CategoryChoice[] = [
-    { value: 'WASHING_MACHINE', label: 'Lave-linge', hint: 'Hublot / top' },
-    { value: 'DISHWASHER', label: 'Lave-vaisselle', hint: 'Pose libre / intégré' },
-    { value: 'OVEN', label: 'Four', hint: 'Encastrable / solo' },
-    { value: 'UNSUPPORTED', label: 'Autre', hint: 'Hors périmètre MVP' }
+    { value: 'WASHING_MACHINE', label: 'Lave-linge', hint: 'Hublot ou top' },
+    { value: 'DISHWASHER', label: 'Lave-vaisselle', hint: 'Pose libre ou intégré' },
+    { value: 'OVEN', label: 'Four', hint: 'Encastrable ou solo' },
+    { value: 'UNSUPPORTED', label: 'Autre', hint: 'Pas encore couvert' }
   ];
 
   selectedFile: File | null = null;
@@ -153,7 +153,7 @@ export class HomePageComponent {
         this.suggesting = false;
         // Upload OK but suggestion failed: user can still choose manually
         if (this.uploadedMediaId) {
-          this.error = 'Suggestion IA indisponible — choisis la catégorie manuellement.';
+          this.error = 'Suggestion indisponible — choisis l’appareil toi-même.';
           return;
         }
         this.handleError(err);
@@ -170,9 +170,9 @@ export class HomePageComponent {
       return;
     }
     if (err?.status === 0 || err?.status === 404) {
-      this.error = 'API indisponible. Vérifie que la gateway tourne sur http://localhost:8090.';
+      this.error = 'Service indisponible pour le moment. Réessaie dans un instant.';
       return;
     }
-    this.error = 'Impossible d’analyser la photo. Réessaie.';
+    this.error = 'Impossible d’utiliser cette photo. Réessaie avec une autre image.';
   }
 }

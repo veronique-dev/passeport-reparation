@@ -1,6 +1,6 @@
 <section class="result container" *ngIf="diagnosis as d">
   <header class="result__intro">
-    <p class="result__eyebrow">{{ d.userConfirmed ? 'Confirmé par toi' : 'Ton passeport' }}</p>
+    <p class="result__eyebrow">Répare d’abord. Achète ensuite.</p>
     <h1>{{ d.supported ? d.applianceLabel : 'Hors périmètre' }}</h1>
     <p class="result__issue">{{ d.probableIssue }}</p>
   </header>
@@ -68,6 +68,7 @@
   </section>
 
   <div class="result__footer">
+    <p class="result__tagline">Répare d’abord. Achète ensuite.</p>
     <button type="button" class="btn btn--ghost" (click)="restart()">Nouvelle photo</button>
   </div>
 </section>

@@ -1,75 +1,98 @@
-<section class="home">
+<section class="home" [class.home--active]="!!previewUrl">
   <div class="home__stage">
     <div
       class="home__photo"
       [class.home__photo--ready]="!!previewUrl"
-      (click)="openPicker()"
-      role="button"
-      tabindex="0"
-      (keydown.enter)="openPicker()"
+      [class.home__photo--busy]="suggesting"
+      (click)="!previewUrl && openPicker()"
+      [attr.role]="previewUrl ? null : 'button'"
+      [attr.tabindex]="previewUrl ? null : 0"
+      (keydown.enter)="!previewUrl && openPicker()"
     >
       <input #fileInput type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onFileSelected($event)" />
 
       <ng-container *ngIf="!previewUrl; else preview">
-        <div class="home__photo-empty">
-          <div class="home__orb" aria-hidden="true">
-            <span></span>
-          </div>
-          <p class="home__photo-kicker">Capture</p>
-          <p class="home__photo-title">Pose ton appareil cassé face à l’objectif</p>
-          <p class="home__photo-hint">Suggestion IA puis confirmation manuelle</p>
+        <div class="home__hero">
+          <p class="home__brand">Passeport de réparation</p>
+          <h1 class="home__slogan">
+            Répare d’abord.<br />Achète ensuite.
+          </h1>
+          <p class="home__lead">
+            Une photo, une estimation, un réparateur près de chez toi —
+            avant de jeter et de racheter.
+          </p>
+          <button type="button" class="btn btn--primary home__cta" (click)="openPicker(); $event.stopPropagation()">
+            Photographier mon appareil
+          </button>
+          <p class="home__hint">Lave-linge · lave-vaisselle · four</p>
         </div>
       </ng-container>
 
       <ng-template #preview>
         <img [src]="previewUrl" alt="Aperçu de l’appareil" />
         <div class="home__photo-veil"></div>
-        <button type="button" class="home__change" (click)="openPicker(); $event.stopPropagation()">Changer</button>
+        <button type="button" class="home__change" (click)="openPicker(); $event.stopPropagation()">
+          Changer la photo
+        </button>
+        <div class="home__scan" *ngIf="suggesting" aria-live="polite">
+          <span class="home__scan-bar" aria-hidden="true"></span>
+          <p>On regarde ta photo…</p>
+        </div>
       </ng-template>
     </div>
 
-    <div class="home__copy container">
-      <p class="home__eyebrow">Photo + suggestion + confirmation</p>
-      <h1>Passeport de réparation</h1>
-      <p class="home__lead">
-        Importe une photo : l’IA propose une catégorie et une panne,
-        tu confirmes ou corriges, puis on estime le coût.
-      </p>
+    <div class="home__panel container" *ngIf="previewUrl">
+      <ol class="steps" aria-label="Étapes">
+        <li class="steps__item steps__item--done">
+          <span class="steps__num" aria-hidden="true">1</span>
+          Photo
+        </li>
+        <li class="steps__item" [class.steps__item--current]="!suggesting" [class.steps__item--done]="canSubmit && !loading">
+          <span class="steps__num" aria-hidden="true">2</span>
+          Confirmer
+        </li>
+        <li class="steps__item" [class.steps__item--current]="loading">
+          <span class="steps__num" aria-hidden="true">3</span>
+          Estimer
+        </li>
+      </ol>
 
-      <div class="home__actions">
-        <button type="button" class="btn btn--ghost" (click)="openPicker()">
-          {{ selectedFile ? 'Changer la photo' : 'Importer une photo' }}
-        </button>
+      <div class="panel-head">
+        <h2>C’est bien ça&nbsp;?</h2>
+        <p>Corrige si besoin — ton choix compte pour l’estimation.</p>
       </div>
 
-      <p class="confirm__loading" *ngIf="suggesting">Analyse de la photo…</p>
+      <p class="home__analyzing" *ngIf="suggesting">
+        <span class="home__dot" aria-hidden="true"></span>
+        Suggestion en cours…
+      </p>
 
-      <section class="confirm" *ngIf="selectedFile && !suggesting">
-        <div class="suggest" *ngIf="suggestion as s">
-          <p class="suggest__label">Suggestion {{ s.provider }} · {{ (s.confidence * 100) | number:'1.0-0' }}%</p>
-          <strong>{{ s.applianceLabel }}</strong>
-          <span>{{ s.probableIssue }}</span>
-          <em>{{ s.rationale }}</em>
-          <p class="suggest__note">Tu peux corriger ci-dessous — la confirmation reste obligatoire.</p>
+      <section class="confirm" *ngIf="!suggesting">
+        <p class="suggest-line" *ngIf="suggestion as s">
+          On pense à <strong>{{ s.applianceLabel }}</strong>
+          <ng-container *ngIf="s.probableIssue"> — {{ s.probableIssue }}</ng-container>
+          <span class="suggest-line__soft"> · tu peux changer</span>
+        </p>
+
+        <div class="confirm__block">
+          <h3>Appareil</h3>
+          <div class="confirm__cats" role="radiogroup" aria-label="Catégorie d’appareil">
+            <button
+              type="button"
+              class="chip"
+              *ngFor="let cat of categories"
+              [class.chip--active]="selectedCategory === cat.value"
+              (click)="selectCategory(cat.value)"
+            >
+              <strong>{{ cat.label }}</strong>
+              <span>{{ cat.hint }}</span>
+            </button>
+          </div>
         </div>
 
-        <h2>Quel appareil&nbsp;?</h2>
-        <div class="confirm__cats" role="radiogroup" aria-label="Catégorie d’appareil">
-          <button
-            type="button"
-            class="chip"
-            *ngFor="let cat of categories"
-            [class.chip--active]="selectedCategory === cat.value"
-            (click)="selectCategory(cat.value)"
-          >
-            <strong>{{ cat.label }}</strong>
-            <span>{{ cat.hint }}</span>
-          </button>
-        </div>
-
-        <ng-container *ngIf="selectedCategory && selectedCategory !== 'UNSUPPORTED'">
-          <h2>Quel symptôme&nbsp;?</h2>
-          <p class="confirm__loading" *ngIf="loadingIssues">Chargement des pannes…</p>
+        <div class="confirm__block" *ngIf="selectedCategory && selectedCategory !== 'UNSUPPORTED'">
+          <h3>Symptôme</h3>
+          <p class="confirm__loading" *ngIf="loadingIssues">Chargement…</p>
           <div class="confirm__issues" *ngIf="!loadingIssues" role="radiogroup" aria-label="Type de panne">
             <button
               type="button"
@@ -81,20 +104,22 @@
               {{ issue.label }}
             </button>
           </div>
-        </ng-container>
+        </div>
 
         <p class="confirm__warn" *ngIf="selectedCategory === 'UNSUPPORTED'">
-          Hors périmètre MVP : on ne pourra pas estimer ni proposer de réparateur pour cet appareil.
+          Cet appareil n’est pas encore couvert — on ne pourra pas estimer ni proposer de réparateur.
         </p>
 
-        <button type="button" class="btn btn--primary confirm__submit" [disabled]="!canSubmit" (click)="analyze()">
-          <span class="btn__spinner" *ngIf="loading" aria-hidden="true"></span>
-          {{ loading ? 'Estimation…' : 'Obtenir mon passeport' }}
-        </button>
+        <div class="confirm__footer">
+          <button type="button" class="btn btn--primary confirm__submit" [disabled]="!canSubmit" (click)="analyze()">
+            <span class="btn__spinner" *ngIf="loading" aria-hidden="true"></span>
+            {{ loading ? 'Calcul…' : 'Voir si ça vaut le coup de réparer' }}
+          </button>
+          <p class="home__note">Estimation indicative — pas un devis.</p>
+        </div>
       </section>
 
       <p class="home__error" *ngIf="error" role="alert">{{ error }}</p>
-      <p class="home__note">Estimation indicative selon le type de panne — ce n’est pas un devis.</p>
     </div>
   </div>
 </section>
