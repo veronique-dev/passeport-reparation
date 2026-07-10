@@ -1,12 +1,39 @@
-<section class="auth container">
-  <header class="auth__head">
-    <p class="auth__eyebrow">Compte</p>
-    <h1>Confirmation email</h1>
-  </header>
-  <p *ngIf="loading">Confirmation en cours…</p>
-  <p class="auth__ok" *ngIf="success">{{ success }}</p>
-  <p class="auth__error" *ngIf="error" role="alert">{{ error }}</p>
-  <p class="auth__links">
-    <a routerLink="/connexion">Se connecter</a>
-  </p>
+<section class="auth-stage">
+  <aside class="auth-stage__mood" aria-hidden="true">
+    <div class="auth-stage__mood-top">
+      <p class="auth-stage__brand">Passeport de réparation</p>
+      <span class="auth-stage__rule"></span>
+    </div>
+
+    <div class="auth-stage__mood-center">
+      <p class="auth-stage__slogan">
+        <span>Répare d’abord.</span>
+        <span class="auth-stage__slogan-soft">Achète ensuite.</span>
+      </p>
+      <p class="auth-stage__mood-lead">Ton appareil a encore une chance.</p>
+    </div>
+
+    <p class="auth-stage__mood-bottom auth-stage__mood-hint">
+      Lave-linge · lave-vaisselle · four
+    </p>
+  </aside>
+
+  <div class="auth-stage__panel">
+    <div class="auth-stage__panel-inner">
+      <header>
+        <p class="auth-stage__kicker">Compte</p>
+        <h1 class="auth-stage__title">Confirmation email</h1>
+        <p class="auth-stage__lead">Activation de ton compte en cours.</p>
+      </header>
+
+      <p class="auth-stage__ok" *ngIf="loading">Confirmation en cours…</p>
+      <p class="auth-stage__ok" *ngIf="success">{{ success }}</p>
+      <p class="auth-stage__error" *ngIf="error" role="alert">{{ error }}</p>
+
+      <p class="auth-stage__links">
+        <a routerLink="/connexion">Se connecter</a>
+        <a routerLink="/">Retour à l’accueil</a>
+      </p>
+    </div>
+  </div>
 </section>

@@ -24,6 +24,8 @@
   --font-display: "Syne", "Avenir Next", sans-serif;
   --font-body: "Manrope", "Segoe UI", sans-serif;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --page-pad: 2rem 0 3.5rem;
+  --page-narrow: 28rem;
 }
 
 *,
@@ -86,6 +88,8 @@ img {
   margin: 0 auto;
 }
 
+/* —— Buttons —— */
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -98,6 +102,7 @@ img {
   font-size: 0.95rem;
   letter-spacing: -0.01em;
   cursor: pointer;
+  text-decoration: none;
   transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s ease, opacity 0.2s ease;
 }
 
@@ -137,6 +142,309 @@ img {
   background: #fff;
 }
 
+.btn--block {
+  width: 100%;
+}
+
+.btn__spinner {
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: spin 0.7s linear infinite;
+}
+
+/* —— Page shell (secondary pages) —— */
+
+.page {
+  padding: var(--page-pad);
+  animation: rise 0.55s var(--ease) both;
+}
+
+.page--narrow {
+  max-width: var(--page-narrow);
+}
+
+.page-head {
+  margin-bottom: 1.5rem;
+}
+
+.page-head__eyebrow {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.45rem;
+}
+
+.page-head h1 {
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+}
+
+.page-head__lead {
+  margin-top: 0.55rem;
+  color: var(--ink-soft);
+  font-size: 1rem;
+  max-width: 36rem;
+}
+
+.page-head__tagline {
+  margin-top: 0.85rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: -0.02em;
+  color: var(--accent-deep);
+}
+
+/* —— Surface panel (forms / interactive blocks) —— */
+
+.surface {
+  padding: 1.35rem 1.3rem 1.4rem;
+  border-radius: var(--radius);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.95), rgba(244, 247, 249, 0.9));
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(12px);
+}
+
+.surface--flush {
+  padding: 0;
+  overflow: hidden;
+}
+
+/* —— Forms —— */
+
+.field-stack {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field > span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.field input {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 0.95rem;
+  font: inherit;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(12, 124, 116, 0.18);
+}
+
+/* —— Feedback —— */
+
+.flash {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.flash--error {
+  color: var(--danger);
+}
+
+.flash--ok {
+  color: var(--accent-deep);
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--ok-soft);
+}
+
+.flash--warn {
+  color: var(--warn);
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--warn-soft);
+}
+
+/* —— Inline links —— */
+
+.page-links {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.page-links--flush {
+  margin-top: 1rem;
+  margin-bottom: 0;
+}
+
+.page-links a {
+  color: var(--accent-deep);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.page-links a:hover {
+  text-decoration: underline;
+}
+
+.link-inline {
+  color: var(--accent-deep);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.link-inline:hover {
+  text-decoration: underline;
+}
+
+.link-action {
+  text-decoration: none;
+  color: var(--accent-deep);
+  font-weight: 700;
+  font-size: 0.86rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid rgba(12, 124, 116, 0.28);
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s var(--ease);
+}
+
+.link-action:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #f4fffd;
+  transform: translateY(-1px);
+}
+
+/* —— Row lists (passports, repairers) —— */
+
+.row-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+
+.row-list > li {
+  border-bottom: 1px solid var(--line);
+}
+
+.row-list__item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.05rem 0.2rem;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition: background 0.2s ease;
+}
+
+.row-list__item:hover,
+.row-list > li:hover {
+  background: rgba(12, 124, 116, 0.04);
+}
+
+.row-list__title {
+  display: block;
+  font-size: 1.02rem;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+
+.row-list__meta {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--ink-faint);
+  font-size: 0.9rem;
+}
+
+.row-list__aside {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--accent-deep);
+  white-space: nowrap;
+  font-size: 0.92rem;
+}
+
+.row-list__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: var(--ok-soft);
+  color: var(--accent-deep);
+  white-space: nowrap;
+}
+
+.status-pill--arbitrate {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.status-pill--replace {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.status-pill--none {
+  background: rgba(16, 33, 43, 0.06);
+  color: var(--ink-faint);
+}
+
+.muted {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.empty-state {
+  margin-top: 1.25rem;
+  color: var(--ink-soft);
+  font-size: 0.98rem;
+}
+
+.empty-state a {
+  color: var(--accent-deep);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.empty-state a:hover {
+  text-decoration: underline;
+}
+
+/* —— Motion —— */
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -161,4 +469,10 @@ img {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .row-list__item {
+    flex-wrap: wrap;
+  }
 }

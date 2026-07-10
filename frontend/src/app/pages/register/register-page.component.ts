@@ -57,10 +57,3 @@ export class RegisterPageComponent {
     return 'Inscription impossible.';
   }
 }
-    });
-  }
-
-  goLogin(): void {
-    void this.router.navigateByUrl('/connexion');
-  }
-}

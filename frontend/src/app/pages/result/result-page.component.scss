@@ -1,32 +1,10 @@
 .result {
-  padding: 1.75rem 0 2rem;
-  animation: rise 0.65s var(--ease) both;
-}
-
-.result__intro {
-  margin-bottom: 1.5rem;
-  animation: rise 0.7s var(--ease) both;
-}
-
-.result__eyebrow {
-  color: var(--accent);
-  font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 0.55rem;
+  padding-top: 1.75rem;
 }
 
 .result__intro h1 {
   font-size: clamp(2.1rem, 5vw, 3.4rem);
   max-width: 14ch;
-}
-
-.result__issue {
-  margin-top: 0.7rem;
-  max-width: 36rem;
-  color: var(--ink-soft);
-  font-size: 1.05rem;
 }
 
 .result__layout {
@@ -56,14 +34,9 @@
 
 .passport {
   position: relative;
-  padding: 1.45rem 1.4rem 1.3rem;
-  border-radius: var(--radius);
-  background:
-    linear-gradient(165deg, rgba(255, 255, 255, 0.95), rgba(244, 247, 249, 0.9));
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow-soft);
   overflow: hidden;
   animation: rise 0.8s var(--ease) 0.1s both;
+  box-shadow: var(--shadow-soft);
 }
 
 .passport::before {
@@ -148,9 +121,7 @@
   letter-spacing: -0.02em;
 }
 
-.passport__disclaimer,
-.passport__unsupported,
-.repairers__empty {
+.passport__disclaimer {
   margin-top: 1.1rem;
   color: var(--ink-faint);
   font-size: 0.9rem;
@@ -158,11 +129,6 @@
 
 .passport__unsupported {
   margin-top: 0;
-  padding: 0.95rem 1rem;
-  border-radius: var(--radius-sm);
-  background: var(--warn-soft);
-  color: var(--warn);
-  font-weight: 600;
 }
 
 .repairers {
@@ -170,73 +136,20 @@
   animation: rise 0.75s var(--ease) 0.16s both;
 }
 
+.repairers__head {
+  margin-bottom: 1.15rem;
+}
+
 .repairers__head h2 {
   font-size: clamp(1.5rem, 3vw, 2rem);
 }
 
-.repairers__head p {
-  margin-top: 0.4rem;
-  color: var(--ink-faint);
-  font-size: 0.92rem;
+.repairers .row-list__item {
+  cursor: default;
 }
 
-.repairers__list {
-  list-style: none;
-  margin: 1.15rem 0 0;
-  padding: 0;
-  border-top: 1px solid var(--line);
-}
-
-.repairers__list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.05rem 0.15rem;
-  border-bottom: 1px solid var(--line);
-  transition: background 0.2s ease;
-}
-
-.repairers__list li:hover {
+.repairers .row-list > li:hover {
   background: rgba(12, 124, 116, 0.04);
-}
-
-.repairers__identity strong {
-  display: block;
-  font-size: 1.02rem;
-  letter-spacing: -0.01em;
-}
-
-.repairers__identity span {
-  display: block;
-  margin-top: 0.2rem;
-  color: var(--ink-faint);
-  font-size: 0.9rem;
-}
-
-.repairers__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.link-action {
-  text-decoration: none;
-  color: var(--accent-deep);
-  font-weight: 700;
-  font-size: 0.86rem;
-  padding: 0.45rem 0.8rem;
-  border-radius: 999px;
-  background: transparent;
-  border: 1px solid rgba(12, 124, 116, 0.28);
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s var(--ease);
-}
-
-.link-action:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #f4fffd;
-  transform: translateY(-1px);
 }
 
 .result__footer {
@@ -248,28 +161,10 @@
   gap: 1rem;
 }
 
-.result__tagline {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1rem;
-  letter-spacing: -0.02em;
-  color: var(--accent-deep);
-}
-
 .result__save {
   margin-top: 0.35rem;
   color: var(--ink-faint);
   font-size: 0.88rem;
-}
-
-.result__save a {
-  color: var(--accent-deep);
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.result__save a:hover {
-  text-decoration: underline;
 }
 
 @media (max-width: 860px) {
@@ -282,7 +177,7 @@
     min-height: 240px;
   }
 
-  .repairers__list li {
+  .repairers .row-list__item {
     flex-direction: column;
     align-items: flex-start;
   }

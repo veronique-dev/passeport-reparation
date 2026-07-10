@@ -58,9 +58,9 @@
         </li>
       </ol>
 
-      <div class="panel-head">
+      <div class="panel-head page-head">
         <h2>C’est bien ça&nbsp;?</h2>
-        <p>Corrige si besoin — ton choix compte pour l’estimation.</p>
+        <p class="page-head__lead">Corrige si besoin — ton choix compte pour l’estimation.</p>
       </div>
 
       <p class="home__analyzing" *ngIf="suggesting">
@@ -120,7 +120,7 @@
         </div>
       </section>
 
-      <p class="home__error" *ngIf="error" role="alert">{{ error }}</p>
+      <p class="flash flash--error home__error" *ngIf="error" role="alert">{{ error }}</p>
     </div>
   </div>
 </section>
