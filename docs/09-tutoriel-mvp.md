@@ -27,10 +27,10 @@ cd frontend && npm start
 
 Ouvre http://localhost:4200/
 
-![Écran d’accueil](images/tutoriel/01-accueil.png)
+![Écran d’accueil](images/tutoriel/01-accueil.jpg)
 
 1. Clique sur **C’est parti — photo**
-2. Choisis une image (JPEG / PNG / WebP), par ex. `product/postman/sample.png`
+2. Choisis une image (JPEG / PNG / WebP), par ex. `product/postman/sample.jpg`
 
 L’app envoie la photo au `media-service`, puis demande une **suggestion IA** (mock ou OpenAI selon `VISION_PROVIDER`).
 
@@ -40,13 +40,13 @@ L’app envoie la photo au `media-service`, puis demande une **suggestion IA** (
 
 Après l’upload, l’écran de confirmation s’affiche.
 
-![Photo + confirmation](images/tutoriel/05-photo-confirmation.png)
+![Photo + confirmation](images/tutoriel/05-photo-confirmation.jpg)
 
 - La suggestion IA préremplit catégorie / panne (**tu peux tout corriger**)
 - Choisis l’**appareil** (lave-linge, lave-vaisselle, four, ou autre)
 - Choisis le **symptôme** dans la liste
 
-![Appareil et panne sélectionnés](images/tutoriel/06-panne-selectionnee.png)
+![Appareil et panne sélectionnés](images/tutoriel/06-panne-selectionnee.jpg)
 
 Puis clique sur **Voir si ça vaut le coup de réparer**.
 
@@ -58,7 +58,7 @@ Puis clique sur **Voir si ça vaut le coup de réparer**.
 
 Tu arrives sur `/resultat` :
 
-![Écran résultat](images/tutoriel/07-resultat.png)
+![Écran résultat](images/tutoriel/07-resultat.jpg)
 
 Tu y trouves :
 
@@ -75,12 +75,12 @@ Le disclaimer *« Estimation indicative — pas un devis »* est volontaire.
 
 Menu **Créer un compte** → `/inscription`
 
-![Formulaire d’inscription](images/tutoriel/02-inscription.png)
+![Formulaire d’inscription](images/tutoriel/02-inscription.jpg)
 
 1. Renseigne email + mot de passe (≥ 8 caractères)
 2. Valide → message de succès
 
-![Inscription réussie](images/tutoriel/09-inscription-succes.png)
+![Inscription réussie](images/tutoriel/09-inscription-succes.jpg)
 
 ---
 
@@ -88,7 +88,7 @@ Menu **Créer un compte** → `/inscription`
 
 Ouvre http://localhost:8025
 
-![Boîte Mailpit](images/tutoriel/08-mailpit.png)
+![Boîte Mailpit](images/tutoriel/08-mailpit.jpg)
 
 1. Ouvre le mail **Confirme ton compte Passeport**
 2. Clique le lien (ou copie l’URL `/confirmer-email?token=…`)
@@ -100,13 +100,13 @@ Sans confirmation, le login affiche : *« Confirme ton email avant de te connect
 
 ## 6. Se connecter
 
-![Connexion](images/tutoriel/03-connexion.png)
+![Connexion](images/tutoriel/03-connexion.jpg)
 
 Après login : accès à **Compte** et **Mes passeports**.
 
-![Profil](images/tutoriel/12-compte.png)
+![Profil](images/tutoriel/12-compte.jpg)
 
-![Mes passeports](images/tutoriel/11-mes-passeports.png)
+![Mes passeports](images/tutoriel/11-mes-passeports.jpg)
 
 - Les diagnostics faits **connecté** apparaissent ici (date, appareil, verdict)
 - Un diagnostic **anonyme** peut être rattaché via le claim (si un `diagnosisId` est encore en session)
@@ -115,7 +115,7 @@ Après login : accès à **Compte** et **Mes passeports**.
 
 ## 7. Mot de passe oublié
 
-![Mot de passe oublié](images/tutoriel/04-mot-de-passe-oublie.png)
+![Mot de passe oublié](images/tutoriel/04-mot-de-passe-oublie.jpg)
 
 1. Saisis ton email
 2. Ouvre le mail dans **Mailpit**
