@@ -41,8 +41,11 @@ export class RegisterPageComponent {
   }
 
   private describeError(err: any): string {
-    const apiMessage = err?.error?.message;
+    const apiMessage = err?.error?.message as string | undefined;
     if (apiMessage) {
+      if (apiMessage.toLowerCase().includes('existe déjà')) {
+        return `${apiMessage} Si tu n’as pas reçu le mail : ouvre Mailpit (http://localhost:8025) ou utilise « Mot de passe oublié ».`;
+      }
       return apiMessage;
     }
     if (err?.status === 0) {

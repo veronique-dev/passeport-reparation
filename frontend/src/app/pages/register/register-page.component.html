@@ -49,6 +49,11 @@
 
       <ng-container *ngIf="success">
         <p class="auth-stage__ok">{{ success }}</p>
+        <p class="auth-stage__lead">
+          En local, l’email n’arrive pas dans Gmail : ouvre
+          <a href="http://localhost:8025" target="_blank" rel="noopener">Mailpit</a>
+          (boîte de test) et clique le lien de confirmation.
+        </p>
         <p class="auth-stage__links">
           <button type="button" class="auth-stage__textbtn" (click)="goLogin()">Aller à la connexion</button>
         </p>
