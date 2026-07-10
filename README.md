@@ -60,6 +60,7 @@ Documentation PO / architecture / QA :
 - [`docs/06-compte-utilisateur.md`](docs/06-compte-utilisateur.md) — compte optionnel + historique
 - [`docs/07-roadmap-v1.2.md`](docs/07-roadmap-v1.2.md) — roadmap v1.2 (stories US-12 → US-22)
 - [`docs/08-environnement-test.md`](docs/08-environnement-test.md) — livraison environnement de test (VPS + Docker)
+- [`docs/09-tutoriel-mvp.md`](docs/09-tutoriel-mvp.md) — tutoriel MVP illustré (captures d’écran)
 - [`product/user-stories-mvp.json`](product/user-stories-mvp.json)
 - [`product/user-stories-mvp.csv`](product/user-stories-mvp.csv)
 - [`product/user-stories-v1.2.json`](product/user-stories-v1.2.json)
