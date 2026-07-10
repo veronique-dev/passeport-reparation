@@ -59,6 +59,7 @@ Documentation PO / architecture / QA :
 - [`docs/05-ai-vision-branch.md`](docs/05-ai-vision-branch.md) — suggestion IA derrière confirmation
 - [`docs/06-compte-utilisateur.md`](docs/06-compte-utilisateur.md) — compte optionnel + historique
 - [`docs/07-roadmap-v1.2.md`](docs/07-roadmap-v1.2.md) — roadmap v1.2 (stories US-12 → US-22)
+- [`docs/08-environnement-test.md`](docs/08-environnement-test.md) — livraison environnement de test (VPS + Docker)
 - [`product/user-stories-mvp.json`](product/user-stories-mvp.json)
 - [`product/user-stories-mvp.csv`](product/user-stories-mvp.csv)
 - [`product/user-stories-v1.2.json`](product/user-stories-v1.2.json)
@@ -452,6 +453,29 @@ docker compose up --build
 - Frontend : http://localhost:4201  
 - API : http://localhost:8090  
 - Mailpit : http://localhost:8025  
+
+## Environnement de test
+
+**Sans budget (maintenant) :**
+
+1. Test local — `docker compose up -d` + front `:4200` / `:4201`, Mailpit `:8025`
+2. Démo publique gratuite — tunnel Cloudflare devant le front Docker :
+
+```bash
+docker compose up -d --build
+cloudflared tunnel --url http://localhost:4201
+# Puis régler APP_FRONTEND_URL / MEDIA_PUBLIC_BASE_URL / CORS sur l’URL https://….trycloudflare.com
+```
+
+**Plus tard (VPS) :**
+
+```bash
+cp infra/test/.env.example infra/test/.env
+export TEST_SSH=ubuntu@TON_IP
+./scripts/deploy-test.sh
+```
+
+Runbook : [`docs/08-environnement-test.md`](docs/08-environnement-test.md).
 
 ## API (via gateway)
 
