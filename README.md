@@ -87,6 +87,8 @@ Photo → Suggestion IA → Confirmation → Verdict € → Réparateurs
          ↘ (optionnel) Compte → Mes passeports
 ```
 
+Diagrammes (conteneurs, séquences, données) : [Architecture](#architecture).
+
 ## Hors scope (v1)
 
 - Compte utilisateur **obligatoire**
@@ -133,17 +135,236 @@ Ces choix ont été **arbitrés manuellement** (périmètre MVP, trade-offs, coh
 
 Détail cadrage : [`docs/02-architecture.md`](docs/02-architecture.md), [`docs/05-ai-vision-branch.md`](docs/05-ai-vision-branch.md), [`docs/06-compte-utilisateur.md`](docs/06-compte-utilisateur.md).
 
-## Stack
+## Architecture
 
-| Couche | Techno |
-|--------|--------|
-| Frontend | Angular 16 |
-| Backend | Java 21, Spring Boot 3.3, Maven |
-| Auth | Spring Security, JWT + refresh, BCrypt |
-| Email | SMTP / Mailpit (local, UI :8025) |
-| Base de données | PostgreSQL 16 (DB par service) |
-| Conteneurs | Docker / Docker Compose |
-| Architecture | Microservices |
+Vue synthétique pour onboarding et revue. Détail : [`docs/02-architecture.md`](docs/02-architecture.md).
+
+### Principes
+
+- **Microservices synchrones** + **gateway** unique — le front ne parle qu’à `:8090`
+- **Orchestration côté Angular** (upload → suggest → diagnose → repairers) — pas de BFF / saga
+- **Database-per-service** (Postgres) — pas de DB partagée
+- **Compte optionnel** — JWT partagé auth ↔ diagnosis pour `/mine` et claim
+- **Vision IA = suggestion** — la confirmation utilisateur reste la source de vérité
+
+### Vue conteneurs
+
+```mermaid
+flowchart TB
+  U(["Utilisateur"])
+
+  subgraph Client
+    F["frontend<br/>Angular 16"]
+  end
+
+  subgraph Edge
+    G["gateway<br/>Spring Cloud Gateway :8090<br/>CORS + routage"]
+  end
+
+  subgraph Services
+    AU["auth-service :8084<br/>Compte · JWT · email"]
+    ME["media-service :8083<br/>Upload photos"]
+    DI["diagnosis-service :8081<br/>Vision · estimation · /mine"]
+    RE["repairer-service :8082<br/>Annuaire Lyon"]
+  end
+
+  subgraph Infra
+    PG[("PostgreSQL 16<br/>auth_db · diagnosis_db · repairer_db")]
+    VOL[("Volume media<br/>{mediaId}.ext")]
+    MP["Mailpit<br/>SMTP + UI :8025"]
+    OAI[["OpenAI Vision<br/>optionnel"]]
+  end
+
+  U --> F --> G
+  G --> AU & ME & DI & RE
+  AU --> PG
+  DI --> PG
+  RE --> PG
+  ME --> VOL
+  AU --> MP
+  DI -.->|suggest| OAI
+  DI -.->|GET photo| ME
+```
+
+### Déploiement local
+
+```mermaid
+flowchart LR
+  subgraph Client
+    A["Angular<br/>:4200 / :4201"]
+  end
+
+  subgraph Edge
+    G["Gateway<br/>:8090"]
+  end
+
+  subgraph Services
+    AU["auth<br/>:8084"]
+    ME["media<br/>:8083"]
+    DI["diagnosis<br/>:8081"]
+    RE["repairer<br/>:8082"]
+  end
+
+  subgraph Infra
+    PG[("Postgres<br/>:5434")]
+    MP["Mailpit<br/>UI :8025"]
+    VOL[("volume media")]
+  end
+
+  A --> G
+  G --> AU & ME & DI & RE
+  AU --> PG
+  DI --> PG
+  RE --> PG
+  AU --> MP
+  ME --> VOL
+```
+
+### Séquence — parcours anonyme (cœur MVP)
+
+```mermaid
+sequenceDiagram
+    actor U as Utilisateur
+    participant F as Angular
+    participant G as Gateway
+    participant M as media-service
+    participant D as diagnosis-service
+    participant R as repairer-service
+
+    U->>F: Photo
+    F->>G: POST /api/media
+    G->>M: forward
+    M-->>F: mediaId
+
+    F->>G: POST /api/diagnoses/suggest
+    G->>D: forward
+    Note over D: Vision mock / OpenAI / off
+    D-->>F: suggestion (préremplissage)
+
+    U->>F: Confirme catégorie + panne
+    F->>G: GET /api/diagnoses/issues?category=
+    G->>D: forward
+    D-->>F: catalogue pannes
+
+    F->>G: POST /api/diagnoses
+    G->>D: forward
+    Note over D: Grille IssueCode → estimate + verdict
+    D-->>F: passeport (estimation)
+
+    F->>G: GET /api/repairers?category=&city=Lyon
+    G->>R: forward
+    R-->>F: liste réparateurs
+    F-->>U: Verdict € + contacts
+```
+
+### Séquence — compte optionnel & historique
+
+```mermaid
+sequenceDiagram
+    actor U as Utilisateur
+    participant F as Angular
+    participant G as Gateway
+    participant A as auth-service
+    participant D as diagnosis-service
+    participant Mail as Mailpit
+
+    U->>F: Inscription
+    F->>G: POST /api/auth/register
+    G->>A: forward
+    A->>Mail: email de confirmation
+    A-->>F: OK
+    U->>F: Clique lien email
+    F->>G: GET /api/auth/confirm?token=
+    G->>A: forward
+
+    U->>F: Login
+    F->>G: POST /api/auth/login
+    G->>A: forward
+    A-->>F: access + refresh JWT
+
+    opt Diagnostic connecté
+        F->>G: POST /api/diagnoses (Bearer)
+        G->>D: forward
+        Note over D: rattache userId depuis JWT
+    end
+
+    opt Claim d'un passeport anonyme
+        F->>G: POST /api/diagnoses/{id}/claim (Bearer)
+        G->>D: forward
+    end
+
+    F->>G: GET /api/diagnoses/mine (Bearer)
+    G->>D: forward
+    D-->>F: historique (createdAt DESC)
+```
+
+### Modèle de données (simplifié)
+
+```mermaid
+erDiagram
+    AUTH_USERS ||--o{ AUTH_REFRESH_TOKENS : has
+    AUTH_USERS {
+        uuid id PK
+        string email UK
+        string password_hash
+        bool email_confirmed
+        instant created_at
+    }
+    AUTH_REFRESH_TOKENS {
+        uuid id PK
+        uuid user_id FK
+        string token_hash
+        instant expires_at
+    }
+
+    DIAGNOSES {
+        uuid id PK
+        uuid media_id
+        uuid user_id "nullable — anonyme ou claimé"
+        string category
+        string issue_code
+        int repair_low
+        int repair_high
+        int replacement_approx
+        string verdict
+        instant created_at
+    }
+
+    REPAIRERS ||--o{ REPAIRER_CATEGORIES : supports
+    REPAIRERS {
+        uuid id PK
+        string name
+        string city
+        string phone
+        string email
+        bool active
+    }
+    REPAIRER_CATEGORIES {
+        uuid repairer_id FK
+        string category
+    }
+```
+
+> **media** : pas de table — fichiers `{mediaId}.{ext}` sur volume.  
+> **auth_db** / **diagnosis_db** / **repairer_db** : bases distinctes sur le même Postgres.
+
+### Composants Maven
+
+```
+passeport-reparation/
+├── common/                 # DTOs / enums partagés
+├── services/
+│   ├── gateway/            # :8090 — CORS + routes
+│   ├── auth-service/       # :8084 — compte, JWT, mail
+│   ├── diagnosis-service/  # :8081 — vision, estimation, /mine
+│   ├── repairer-service/   # :8082 — annuaire
+│   └── media-service/      # :8083 — photos
+├── frontend/               # Angular 16
+├── e2e-tests/              # JUnit via gateway + Mailpit
+├── infra/postgres/         # init auth_db, diagnosis_db, repairer_db
+├── product/                # stories, Postman, matrice QA
+└── docker-compose.yml
+```
 
 ### Microservices
 
@@ -156,22 +377,19 @@ Détail cadrage : [`docs/02-architecture.md`](docs/02-architecture.md), [`docs/0
 | **auth-service** | 8084 | Compte, JWT, confirm email, reset mdp |
 | **frontend** | 4200 (dev) / 4201 (Docker) | SPA Angular |
 
-```
-passeport-reparation/
-├── common/                 # DTOs partagés
-├── services/
-│   ├── gateway/
-│   ├── auth-service/
-│   ├── diagnosis-service/
-│   ├── repairer-service/
-│   └── media-service/
-├── frontend/               # Angular
-├── infra/postgres/
-└── docker-compose.yml
-```
+### Stack
+
+| Couche | Techno |
+|--------|--------|
+| Frontend | Angular 16 |
+| Backend | Java 21, Spring Boot 3.3, Maven |
+| Auth | Spring Security, JWT + refresh, BCrypt |
+| Email | SMTP / Mailpit (local, UI :8025) |
+| Base de données | PostgreSQL 16 (DB par service) |
+| Conteneurs | Docker / Docker Compose |
+| Architecture | Microservices |
 
 **Infra locale :** Compose + URLs fixes (pas d’Eureka / Kafka).
-
 ## Démarrage rapide
 
 ### Prérequis
