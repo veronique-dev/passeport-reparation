@@ -70,10 +70,15 @@ Documentation PO / architecture / QA :
 # Unitaires
 mvn -pl services/auth-service,services/diagnosis-service,services/media-service,services/repairer-service -am test
 
-# E2E (stack Docker requise sur :8090)
+# Unitaires Angular
+cd frontend && npm run test:ci
+
+# E2E (stack Docker requise sur :8090 + Mailpit :8025)
 docker compose up -d
-mvn -pl e2e-tests -Pe2e test -De2e.base.url=http://localhost:8090
+mvn -pl e2e-tests -Pe2e test -De2e.base.url=http://localhost:8090 -De2e.mailpit.url=http://localhost:8025
 ```
+
+Plan QA : [`docs/04-plan-de-test.md`](docs/04-plan-de-test.md) · matrice : [`product/test-matrix.json`](product/test-matrix.json)
 
 ## Parcours utilisateur
 

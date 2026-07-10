@@ -241,7 +241,7 @@ Hors vague v1.2 (garder en v2+) : OAuth, DIY, multi-villes GPS, marketplace, dev
 | US-19 | Fixtures vision | D | À faire |
 | US-20 | Phrase d’explication verdict | E | À faire |
 | US-21 | Alignement docs | E | À faire |
-| US-22 | E2E auth | E | À faire |
+| US-22 | E2E auth | E | Fait |
 
 ## Fichiers associés
 

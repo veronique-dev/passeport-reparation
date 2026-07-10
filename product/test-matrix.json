@@ -1,6 +1,6 @@
 {
   "project": "Passeport de réparation",
-  "version": "MVP 1.0",
+  "version": "MVP 1.0 + compte + US-12/US-22",
   "levels": ["unit", "e2e", "manual-api", "manual-ui"],
   "coverage": [
     {
@@ -20,7 +20,9 @@
     {
       "storyId": "US-02",
       "title": "Confirmer la catégorie d'appareil",
-      "automated": [],
+      "automated": [
+        "HomePageComponent canSubmit / selectCategory"
+      ],
       "manual": ["UI sélection catégorie"]
     },
     {
@@ -112,6 +114,59 @@
       "title": "Relancer une nouvelle estimation",
       "automated": [],
       "manual": ["Bouton Nouvelle photo"]
+    },
+    {
+      "storyId": "AUTH",
+      "title": "Compte optionnel (register / login / reset / profil)",
+      "automated": [
+        "AuthServiceTest.registerCreatesUserAndSendsConfirmMail",
+        "AuthServiceTest.registerRejectsDuplicateEmail",
+        "AuthServiceTest.loginRequiresVerifiedEmail",
+        "AuthServiceTest.loginRejectsBadPassword",
+        "AuthServiceTest.loginReturnsTokensWhenVerified",
+        "AuthServiceTest.confirmEmailMarksUserVerified",
+        "AuthServiceTest.confirmEmailRejectsExpiredOrUsedToken",
+        "AuthServiceTest.refreshRotatesSession",
+        "AuthServiceTest.refreshRejectsRevokedToken",
+        "AuthServiceTest.logoutRevokesRefreshToken",
+        "AuthServiceTest.meAndUpdateProfile",
+        "AuthServiceTest.forgotPasswordSendsResetWhenUserExists",
+        "AuthServiceTest.forgotPasswordDoesNotRevealMissingAccount",
+        "AuthServiceTest.resetPasswordUpdatesHashAndMarksVerified",
+        "AuthAcceptanceTest.us22_register",
+        "AuthAcceptanceTest.us22_confirmFromMailpit",
+        "AuthAcceptanceTest.us22_login",
+        "AuthAcceptanceTest.us22_authenticatedDiagnosisInMine",
+        "AuthAcceptanceTest.us22_refreshAndLogout",
+        "AuthAcceptanceTest.us22_forgotAndResetPassword",
+        "AuthService (Angular)",
+        "LoginPageComponent",
+        "AuthGuard",
+        "AuthInterceptor"
+      ],
+      "manual": ["UI inscription / connexion / reset", "Mailpit confirm"]
+    },
+    {
+      "storyId": "US-12",
+      "title": "Rattacher un passeport anonyme après connexion",
+      "automated": [
+        "DiagnosisServiceTest.us12_claimsAnonymousDiagnosis",
+        "DiagnosisServiceTest.us12_claimIsIdempotentForSameUser",
+        "DiagnosisServiceTest.us12_claimRejectsOtherOwner",
+        "AuthAcceptanceTest.us12_claimAnonymousPassport",
+        "AuthAcceptanceTest.us12_claimIdempotent",
+        "DiagnosisClaimService",
+        "SessionStore"
+      ],
+      "manual": ["Estimation anonyme puis login → Mes passeports"]
+    },
+    {
+      "storyId": "US-22",
+      "title": "E2E auth minimal (register → confirm → login → mine)",
+      "automated": [
+        "AuthAcceptanceTest"
+      ],
+      "manual": []
     }
   ]
 }

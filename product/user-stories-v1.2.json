@@ -227,7 +227,7 @@
       "priority": "Should",
       "wave": "E",
       "epic": "EPIC-9",
-      "status": "todo",
+      "status": "done",
       "labels": ["e2e", "auth"],
       "userStory": "En tant qu'équipe, je veux un E2E auth via gateway, afin de ne pas régresser le compte.",
       "acceptanceCriteria": [
