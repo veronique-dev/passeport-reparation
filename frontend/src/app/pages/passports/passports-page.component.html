@@ -15,7 +15,10 @@
         <button type="button" class="row-list__item" (click)="open(item)">
           <div>
             <strong class="row-list__title">{{ item.applianceLabel }}</strong>
-            <span class="row-list__meta">{{ item.probableIssue }}</span>
+            <span class="row-list__meta">
+              <ng-container *ngIf="formatDate(item.createdAt) as date">{{ date }} · </ng-container>
+              {{ item.probableIssue }}
+            </span>
           </div>
           <em
             class="status-pill"

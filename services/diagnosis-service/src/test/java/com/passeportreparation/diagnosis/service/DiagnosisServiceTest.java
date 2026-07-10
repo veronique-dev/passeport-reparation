@@ -15,6 +15,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +41,9 @@ class DiagnosisServiceTest {
             Diagnosis d = invocation.getArgument(0);
             if (d.getId() == null) {
                 d.setId(UUID.randomUUID());
+            }
+            if (d.getCreatedAt() == null) {
+                d.setCreatedAt(java.time.Instant.now());
             }
             return d;
         });
@@ -179,5 +184,58 @@ class DiagnosisServiceTest {
 
         assertThatThrownBy(() -> service.claim(diagnosisId, UUID.randomUUID()))
                 .isInstanceOf(DiagnosisClaimConflictException.class);
+    }
+
+    @Test
+    void us13_listMineReturnsCreatedAtNewestFirst() {
+        UUID userId = UUID.randomUUID();
+        Instant older = Instant.parse("2026-07-01T10:00:00Z");
+        Instant newer = Instant.parse("2026-07-10T15:30:00Z");
+
+        Diagnosis first = Diagnosis.builder()
+                .id(UUID.randomUUID())
+                .mediaId("m-new")
+                .category(ApplianceCategory.OVEN)
+                .applianceLabel("Four")
+                .probableIssue("Joint")
+                .supported(true)
+                .userConfirmed(true)
+                .userId(userId)
+                .createdAt(newer)
+                .build();
+        Diagnosis second = Diagnosis.builder()
+                .id(UUID.randomUUID())
+                .mediaId("m-old")
+                .category(ApplianceCategory.WASHING_MACHINE)
+                .applianceLabel("Lave-linge")
+                .probableIssue("Pompe")
+                .supported(true)
+                .userConfirmed(true)
+                .userId(userId)
+                .createdAt(older)
+                .build();
+
+        when(repository.findByUserIdOrderByCreatedAtDesc(userId)).thenReturn(List.of(first, second));
+
+        List<DiagnosisResponse> mine = service.listMine(userId);
+
+        assertThat(mine).hasSize(2);
+        assertThat(mine.get(0).getCreatedAt()).isEqualTo(newer);
+        assertThat(mine.get(1).getCreatedAt()).isEqualTo(older);
+        assertThat(mine.get(0).getApplianceLabel()).isEqualTo("Four");
+        verify(repository).findByUserIdOrderByCreatedAtDesc(userId);
+    }
+
+    @Test
+    void us05_diagnoseExposesCreatedAt() {
+        DiagnosisRequest request = DiagnosisRequest.builder()
+                .mediaId("media-1")
+                .category(ApplianceCategory.OVEN)
+                .issueCode(IssueCode.OV_DOOR_SEAL)
+                .build();
+
+        DiagnosisResponse response = service.diagnose(request, null);
+
+        assertThat(response.getCreatedAt()).isNotNull();
     }
 }

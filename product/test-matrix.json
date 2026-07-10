@@ -161,6 +161,15 @@
       "manual": ["Estimation anonyme puis login → Mes passeports"]
     },
     {
+      "storyId": "US-13",
+      "title": "Enrichir Mes passeports (date, verdict, rouvrir)",
+      "automated": [
+        "DiagnosisServiceTest.us13_listMineReturnsCreatedAtNewestFirst",
+        "PassportsPageComponent loads passports newest first with formatted date"
+      ],
+      "manual": ["UI /mes-passeports date + clic résultat"]
+    },
+    {
       "storyId": "US-22",
       "title": "E2E auth minimal (register → confirm → login → mine)",
       "automated": [

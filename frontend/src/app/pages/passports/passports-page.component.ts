@@ -15,6 +15,12 @@ export class PassportsPageComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
+  private readonly dateFormatter = new Intl.DateTimeFormat('fr-FR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+
   constructor(
     private readonly api: ApiService,
     private readonly store: SessionStore,
@@ -24,7 +30,12 @@ export class PassportsPageComponent implements OnInit {
   ngOnInit(): void {
     this.api.getMyDiagnoses().subscribe({
       next: (items) => {
-        this.items = items;
+        // API already returns newest-first; keep a defensive client sort.
+        this.items = [...items].sort((a, b) => {
+          const ta = a.createdAt ? Date.parse(a.createdAt) : 0;
+          const tb = b.createdAt ? Date.parse(b.createdAt) : 0;
+          return tb - ta;
+        });
         this.loading = false;
       },
       error: (err) => {
@@ -32,6 +43,17 @@ export class PassportsPageComponent implements OnInit {
         this.error = err?.error?.message || 'Impossible de charger tes passeports.';
       }
     });
+  }
+
+  formatDate(iso: string | undefined): string {
+    if (!iso) {
+      return '';
+    }
+    const ts = Date.parse(iso);
+    if (Number.isNaN(ts)) {
+      return '';
+    }
+    return this.dateFormatter.format(ts);
   }
 
   open(item: DiagnosisResponse): void {

@@ -146,6 +146,7 @@ public class DiagnosisService {
                 .supported(entity.isSupported())
                 .userConfirmed(entity.isUserConfirmed())
                 .userId(entity.getUserId())
+                .createdAt(entity.getCreatedAt())
                 .build();
     }
 }
