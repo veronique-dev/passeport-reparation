@@ -1,41 +1,63 @@
-<section class="auth container">
-  <header class="auth__head">
-    <p class="auth__eyebrow">Compte</p>
-    <h1>Créer un compte</h1>
-    <p>Optionnel — pour garder l’historique de tes passeports.
-      Si tu viens de faire une estimation, connecte-toi après confirmation email pour la rattacher.</p>
-  </header>
+<section class="auth-stage">
+  <aside class="auth-stage__mood" aria-hidden="true">
+    <div class="auth-stage__mood-top">
+      <p class="auth-stage__brand">Passeport de réparation</p>
+      <span class="auth-stage__rule"></span>
+    </div>
 
-  <form class="auth__form" (ngSubmit)="submit()" #f="ngForm" *ngIf="!success">
-    <label>
-      <span>Prénom (optionnel)</span>
-      <input name="firstName" type="text" [(ngModel)]="firstName" autocomplete="given-name" />
-    </label>
-    <label>
-      <span>Email</span>
-      <input name="email" type="email" required [(ngModel)]="email" autocomplete="email" />
-    </label>
-    <label>
-      <span>Mot de passe (8+ caractères)</span>
-      <input name="password" type="password" required minlength="8" [(ngModel)]="password" autocomplete="new-password" />
-    </label>
+    <div class="auth-stage__mood-center">
+      <p class="auth-stage__slogan">
+        <span>Répare d’abord.</span>
+        <span class="auth-stage__slogan-soft">Achète ensuite.</span>
+      </p>
+      <p class="auth-stage__mood-lead">Ton appareil a encore une chance.</p>
+    </div>
 
-    <p class="auth__error" *ngIf="error" role="alert">{{ error }}</p>
-
-    <button class="btn btn--primary" type="submit" [disabled]="loading || f.invalid">
-      {{ loading ? 'Création…' : 'Créer mon compte' }}
-    </button>
-  </form>
-
-  <ng-container *ngIf="success">
-    <p class="auth__ok">{{ success }}</p>
-    <p class="auth__links">
-      <button type="button" class="btn btn--ghost" (click)="goLogin()">Aller à la connexion</button>
+    <p class="auth-stage__mood-bottom auth-stage__mood-hint">
+      Lave-linge · lave-vaisselle · four
     </p>
-  </ng-container>
+  </aside>
 
-  <p class="auth__links" *ngIf="!success">
-    <a routerLink="/connexion">Déjà un compte ?</a>
-    <a routerLink="/">Continuer sans compte</a>
-  </p>
+  <div class="auth-stage__panel">
+    <div class="auth-stage__panel-inner">
+      <header>
+        <p class="auth-stage__kicker">Compte</p>
+        <h1 class="auth-stage__title">Créer un compte</h1>
+        <p class="auth-stage__lead">Optionnel — pour retrouver tes passeports plus tard.</p>
+      </header>
+
+      <form class="auth-stage__form" (ngSubmit)="submit()" #f="ngForm" *ngIf="!success">
+        <label class="field">
+          <span>Prénom</span>
+          <input name="firstName" type="text" [(ngModel)]="firstName" autocomplete="given-name" placeholder="Optionnel" />
+        </label>
+        <label class="field">
+          <span>Email</span>
+          <input name="email" type="email" required [(ngModel)]="email" autocomplete="email" placeholder="toi@email.com" />
+        </label>
+        <label class="field">
+          <span>Mot de passe</span>
+          <input name="password" type="password" required minlength="8" [(ngModel)]="password" autocomplete="new-password" placeholder="8 caractères minimum" />
+        </label>
+
+        <p class="auth-stage__error" *ngIf="error" role="alert">{{ error }}</p>
+
+        <button class="btn btn--primary auth-stage__cta" type="submit" [disabled]="loading || f.invalid">
+          {{ loading ? 'Création…' : 'Créer mon compte' }}
+        </button>
+      </form>
+
+      <ng-container *ngIf="success">
+        <p class="auth-stage__ok">{{ success }}</p>
+        <p class="auth-stage__links">
+          <button type="button" class="auth-stage__textbtn" (click)="goLogin()">Aller à la connexion</button>
+        </p>
+      </ng-container>
+
+      <p class="auth-stage__links" *ngIf="!success">
+        <a routerLink="/connexion">Déjà un compte ?</a>
+        <a routerLink="/">Continuer sans compte</a>
+      </p>
+    </div>
+  </div>
 </section>

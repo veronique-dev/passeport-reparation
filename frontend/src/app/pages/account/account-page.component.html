@@ -1,24 +1,47 @@
-<section class="auth container" *ngIf="user as u">
-  <header class="auth__head">
-    <p class="auth__eyebrow">Mon compte</p>
-    <h1>{{ u.firstName || 'Ton profil' }}</h1>
-    <p>{{ u.email }}</p>
-  </header>
+<section class="auth-stage" *ngIf="user as u">
+  <aside class="auth-stage__mood" aria-hidden="true">
+    <div class="auth-stage__mood-top">
+      <p class="auth-stage__brand">Passeport de réparation</p>
+      <span class="auth-stage__rule"></span>
+    </div>
 
-  <form class="auth__form" (ngSubmit)="save()">
-    <label>
-      <span>Prénom</span>
-      <input name="firstName" type="text" [(ngModel)]="firstName" />
-    </label>
-    <p class="auth__ok" *ngIf="message">{{ message }}</p>
-    <p class="auth__error" *ngIf="error" role="alert">{{ error }}</p>
-    <button class="btn btn--primary" type="submit" [disabled]="loading">
-      {{ loading ? 'Enregistrement…' : 'Enregistrer' }}
-    </button>
-  </form>
+    <div class="auth-stage__mood-center">
+      <p class="auth-stage__slogan">
+        <span>Répare d’abord.</span>
+        <span class="auth-stage__slogan-soft">Achète ensuite.</span>
+      </p>
+      <p class="auth-stage__mood-lead">Ton appareil a encore une chance.</p>
+    </div>
 
-  <div class="account__actions">
-    <a routerLink="/mes-passeports" class="btn btn--ghost">Mes passeports</a>
-    <button type="button" class="btn btn--ghost" (click)="logout()">Se déconnecter</button>
+    <p class="auth-stage__mood-bottom auth-stage__mood-hint">
+      Lave-linge · lave-vaisselle · four
+    </p>
+  </aside>
+
+  <div class="auth-stage__panel">
+    <div class="auth-stage__panel-inner">
+      <header>
+        <p class="auth-stage__kicker">Mon compte</p>
+        <h1 class="auth-stage__title">{{ u.firstName || 'Ton profil' }}</h1>
+        <p class="auth-stage__lead">{{ u.email }}</p>
+      </header>
+
+      <form class="auth-stage__form" (ngSubmit)="save()">
+        <label class="field">
+          <span>Prénom</span>
+          <input name="firstName" type="text" [(ngModel)]="firstName" placeholder="Ton prénom" />
+        </label>
+        <p class="auth-stage__ok" *ngIf="message">{{ message }}</p>
+        <p class="auth-stage__error" *ngIf="error" role="alert">{{ error }}</p>
+        <button class="btn btn--primary auth-stage__cta" type="submit" [disabled]="loading">
+          {{ loading ? 'Enregistrement…' : 'Enregistrer' }}
+        </button>
+      </form>
+
+      <p class="auth-stage__links">
+        <a routerLink="/mes-passeports">Mes passeports</a>
+        <button type="button" class="auth-stage__textbtn" (click)="logout()">Se déconnecter</button>
+      </p>
+    </div>
   </div>
 </section>

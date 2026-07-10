@@ -277,16 +277,17 @@
   color: #fff;
 }
 
+.panel-head {
+  margin-bottom: 0;
+}
+
 .panel-head h2 {
   font-size: clamp(1.55rem, 3.5vw, 2rem);
   letter-spacing: -0.03em;
 }
 
-.panel-head p {
+.panel-head .page-head__lead {
   margin-top: 0.4rem;
-  color: var(--ink-soft);
-  font-size: 0.98rem;
-  max-width: 32rem;
 }
 
 .home__analyzing {
@@ -438,9 +439,6 @@
 
 .home__error {
   margin-top: 1rem;
-  color: var(--danger);
-  font-weight: 600;
-  font-size: 0.95rem;
 }
 
 .home__note {

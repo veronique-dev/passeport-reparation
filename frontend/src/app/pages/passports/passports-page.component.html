@@ -1,27 +1,39 @@
-<section class="passports container">
-  <header class="passports__head">
-    <p class="passports__eyebrow">Historique</p>
+<section class="page container">
+  <header class="page-head">
+    <p class="page-head__eyebrow">Historique</p>
     <h1>Mes passeports</h1>
-    <p>Tes diagnostics enregistrés — rouvre-les quand tu veux.</p>
+    <p class="page-head__lead">Tes diagnostics enregistrés — rouvre-les quand tu veux.</p>
+    <p class="page-head__tagline">Répare d’abord. Achète ensuite.</p>
   </header>
 
-  <p *ngIf="loading">Chargement…</p>
-  <p class="passports__error" *ngIf="error" role="alert">{{ error }}</p>
+  <p class="muted" *ngIf="loading">Chargement…</p>
+  <p class="flash flash--error" *ngIf="error" role="alert">{{ error }}</p>
 
-  <ul class="passports__list" *ngIf="!loading && !error">
-    <li *ngFor="let item of items">
-      <button type="button" class="passport-row" (click)="open(item)">
-        <div>
-          <strong>{{ item.applianceLabel }}</strong>
-          <span>{{ item.probableIssue }}</span>
-        </div>
-        <em>{{ verdictLabel(item.verdict) }}</em>
-      </button>
-    </li>
-  </ul>
+  <div class="surface surface--flush" *ngIf="!loading && !error && items.length">
+    <ul class="row-list">
+      <li *ngFor="let item of items">
+        <button type="button" class="row-list__item" (click)="open(item)">
+          <div>
+            <strong class="row-list__title">{{ item.applianceLabel }}</strong>
+            <span class="row-list__meta">{{ item.probableIssue }}</span>
+          </div>
+          <em
+            class="status-pill"
+            [class.status-pill--arbitrate]="item.verdict === 'ARBITRATE'"
+            [class.status-pill--replace]="item.verdict === 'REPLACE'"
+            [class.status-pill--none]="!item.verdict"
+          >{{ verdictLabel(item.verdict) }}</em>
+        </button>
+      </li>
+    </ul>
+  </div>
 
-  <p class="passports__empty" *ngIf="!loading && !error && !items.length">
+  <p class="empty-state" *ngIf="!loading && !error && !items.length">
     Aucun passeport pour l’instant.
     <a routerLink="/">Faire une estimation</a>
+  </p>
+
+  <p class="page-links" *ngIf="!loading">
+    <a routerLink="/" class="btn btn--ghost">Nouvelle estimation</a>
   </p>
 </section>

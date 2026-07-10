@@ -28,7 +28,7 @@ services:
     depends_on: []
 
   mailhog:
-    image: mailhog/mailhog:v1.0.1
+    image: axllent/mailpit:v1.22
     ports:
       - "8025:8025"
       - "1025:1025"

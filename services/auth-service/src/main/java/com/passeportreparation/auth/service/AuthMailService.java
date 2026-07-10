@@ -48,11 +48,17 @@ public class AuthMailService {
             log.info("[mail-disabled] to={} subject={} body=\n{}", to, subject, body);
             return;
         }
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(from);
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
-        mailSender.send(message);
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(from);
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(body);
+            mailSender.send(message);
+        } catch (Exception ex) {
+            // Registration/login must not fail if SMTP is down — log the link for local/dev.
+            log.warn("Email send failed (to={}, subject={}): {}. Falling back to log.\n{}",
+                    to, subject, ex.getMessage(), body);
+        }
     }
 }

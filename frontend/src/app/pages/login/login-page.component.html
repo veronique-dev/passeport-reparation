@@ -1,29 +1,53 @@
-<section class="auth container">
-  <header class="auth__head">
-    <p class="auth__eyebrow">Compte</p>
-    <h1>Connexion</h1>
-    <p>Retrouve tes passeports et continue sans tout recommencer.</p>
-  </header>
+<section class="auth-stage">
+  <aside class="auth-stage__mood" aria-hidden="true">
+    <div class="auth-stage__mood-top">
+      <p class="auth-stage__brand">Passeport de réparation</p>
+      <span class="auth-stage__rule"></span>
+    </div>
 
-  <form class="auth__form" (ngSubmit)="submit()" #f="ngForm">
-    <label>
-      <span>Email</span>
-      <input name="email" type="email" required [(ngModel)]="email" autocomplete="email" />
-    </label>
-    <label>
-      <span>Mot de passe</span>
-      <input name="password" type="password" required minlength="8" [(ngModel)]="password" autocomplete="current-password" />
-    </label>
+    <div class="auth-stage__mood-center">
+      <p class="auth-stage__slogan">
+        <span>Répare d’abord.</span>
+        <span class="auth-stage__slogan-soft">Achète ensuite.</span>
+      </p>
+      <p class="auth-stage__mood-lead">Ton appareil a encore une chance.</p>
+    </div>
 
-    <p class="auth__error" *ngIf="error" role="alert">{{ error }}</p>
+    <p class="auth-stage__mood-bottom auth-stage__mood-hint">
+      Lave-linge · lave-vaisselle · four
+    </p>
+  </aside>
 
-    <button class="btn btn--primary" type="submit" [disabled]="loading || f.invalid">
-      {{ loading ? 'Connexion…' : 'Se connecter' }}
-    </button>
-  </form>
+  <div class="auth-stage__panel">
+    <div class="auth-stage__panel-inner">
+      <header>
+        <p class="auth-stage__kicker">Compte</p>
+        <h1 class="auth-stage__title">Connexion</h1>
+        <p class="auth-stage__lead">Retrouve tes passeports et reprends où tu t’étais arrêté.</p>
+      </header>
 
-  <p class="auth__links">
-    <a routerLink="/mot-de-passe-oublie">Mot de passe oublié</a>
-    <a routerLink="/inscription">Créer un compte</a>
-  </p>
+      <form class="auth-stage__form" (ngSubmit)="submit()" #f="ngForm">
+        <label class="field">
+          <span>Email</span>
+          <input name="email" type="email" required [(ngModel)]="email" autocomplete="email" placeholder="toi@email.com" />
+        </label>
+        <label class="field">
+          <span>Mot de passe</span>
+          <input name="password" type="password" required minlength="8" [(ngModel)]="password" autocomplete="current-password" placeholder="••••••••" />
+        </label>
+
+        <p class="auth-stage__error" *ngIf="error" role="alert">{{ error }}</p>
+
+        <button class="btn btn--primary auth-stage__cta" type="submit" [disabled]="loading || f.invalid">
+          {{ loading ? 'Connexion…' : 'Se connecter' }}
+        </button>
+      </form>
+
+      <p class="auth-stage__links">
+        <a routerLink="/mot-de-passe-oublie">Mot de passe oublié</a>
+        <a routerLink="/inscription">Créer un compte</a>
+      </p>
+      <p class="auth-stage__meta">Compte optionnel — tu peux estimer sans t’inscrire.</p>
+    </div>
+  </div>
 </section>

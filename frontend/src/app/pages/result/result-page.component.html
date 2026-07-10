@@ -1,8 +1,8 @@
-<section class="result container" *ngIf="diagnosis as d">
-  <header class="result__intro">
-    <p class="result__eyebrow">Ton passeport</p>
+<section class="result page container" *ngIf="diagnosis as d">
+  <header class="page-head result__intro">
+    <p class="page-head__eyebrow">Ton passeport</p>
     <h1>{{ d.supported ? d.applianceLabel : 'Hors périmètre' }}</h1>
-    <p class="result__issue">{{ d.probableIssue }}</p>
+    <p class="page-head__lead">{{ d.probableIssue }}</p>
   </header>
 
   <div class="result__layout">
@@ -10,7 +10,7 @@
       <img [src]="previewUrl" alt="Photo analysée" />
     </figure>
 
-    <article class="passport" [attr.data-verdict]="d.verdict || 'NONE'">
+    <article class="passport surface" [attr.data-verdict]="d.verdict || 'NONE'">
       <div class="passport__stamp" *ngIf="d.supported">
         <span>Verdict</span>
         <strong>{{ verdictLabel(d.verdict) }}</strong>
@@ -30,7 +30,7 @@
       </ng-container>
 
       <ng-template #unsupported>
-        <p class="passport__unsupported">
+        <p class="flash flash--warn passport__unsupported">
           Catégorie non supportée pour l’instant. Le MVP couvre lave-linge, lave-vaisselle et four.
         </p>
       </ng-template>
@@ -40,44 +40,48 @@
   </div>
 
   <section class="repairers" *ngIf="d.supported">
-    <div class="repairers__head">
+    <div class="page-head repairers__head">
       <h2>Réparateurs à proximité</h2>
-      <p>Zone test · Lyon — contact en un clic</p>
+      <p class="page-head__lead">Zone test · Lyon — contact en un clic</p>
     </div>
 
-    <ul class="repairers__list" *ngIf="repairers.length; else empty">
-      <li *ngFor="let r of repairers">
-        <div class="repairers__identity">
-          <strong>{{ r.name }}</strong>
-          <span>
-            {{ r.city }}
-            <ng-container *ngIf="r.distanceKm != null"> · {{ r.distanceKm }} km</ng-container>
-          </span>
-        </div>
-        <div class="repairers__actions">
-          <a *ngIf="r.phone" class="link-action" [href]="telHref(r.phone)">Appeler</a>
-          <a *ngIf="r.email" class="link-action" [href]="mailHref(r.email)">Email</a>
-          <a *ngIf="r.whatsapp" class="link-action" [href]="waHref(r.whatsapp)" target="_blank" rel="noopener">WhatsApp</a>
-        </div>
-      </li>
-    </ul>
+    <div class="surface surface--flush" *ngIf="repairers.length; else empty">
+      <ul class="row-list">
+        <li *ngFor="let r of repairers">
+          <div class="row-list__item">
+            <div class="repairers__identity">
+              <strong class="row-list__title">{{ r.name }}</strong>
+              <span class="row-list__meta">
+                {{ r.city }}
+                <ng-container *ngIf="r.distanceKm != null"> · {{ r.distanceKm }} km</ng-container>
+              </span>
+            </div>
+            <div class="row-list__actions">
+              <a *ngIf="r.phone" class="link-action" [href]="telHref(r.phone)">Appeler</a>
+              <a *ngIf="r.email" class="link-action" [href]="mailHref(r.email)">Email</a>
+              <a *ngIf="r.whatsapp" class="link-action" [href]="waHref(r.whatsapp)" target="_blank" rel="noopener">WhatsApp</a>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
 
     <ng-template #empty>
-      <p class="repairers__empty">Aucun réparateur trouvé pour cette catégorie dans la zone test.</p>
+      <p class="empty-state">Aucun réparateur trouvé pour cette catégorie dans la zone test.</p>
     </ng-template>
   </section>
 
   <div class="result__footer">
     <div>
-      <p class="result__tagline">Répare d’abord. Achète ensuite.</p>
+      <p class="page-head__tagline">Répare d’abord. Achète ensuite.</p>
       <p class="result__save" *ngIf="!diagnosis?.userId">
-        <a routerLink="/inscription">Crée un compte</a>
+        <a class="link-inline" routerLink="/inscription">Crée un compte</a>
         ou
-        <a routerLink="/connexion">connecte-toi</a>
+        <a class="link-inline" routerLink="/connexion">connecte-toi</a>
         pour retrouver ce passeport dans Mes passeports.
       </p>
       <p class="result__save" *ngIf="diagnosis?.userId">
-        Enregistré dans <a routerLink="/mes-passeports">Mes passeports</a>.
+        Enregistré dans <a class="link-inline" routerLink="/mes-passeports">Mes passeports</a>.
       </p>
     </div>
     <button type="button" class="btn btn--ghost" (click)="restart()">Nouvelle photo</button>
