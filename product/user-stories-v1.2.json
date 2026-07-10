@@ -93,7 +93,7 @@
       "priority": "Must",
       "wave": "A",
       "epic": "EPIC-5",
-      "status": "todo",
+      "status": "done",
       "labels": ["frontend", "diagnosis"],
       "userStory": "En tant qu'utilisateur connecté, je veux une liste claire de mes passeports, afin de retrouver et rouvrir un diagnostic.",
       "acceptanceCriteria": [

@@ -52,6 +52,7 @@ export interface DiagnosisResponse {
   supported: boolean;
   userConfirmed?: boolean;
   userId?: string;
+  createdAt?: string;
 }
 
 export interface Repairer {

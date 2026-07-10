@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -28,4 +29,5 @@ public class DiagnosisResponse {
     private boolean supported;
     private boolean userConfirmed;
     private UUID userId;
+    private Instant createdAt;
 }

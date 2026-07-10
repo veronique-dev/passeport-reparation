@@ -137,6 +137,7 @@ class AuthAcceptanceTest {
                 .then()
                 .statusCode(201)
                 .body("userId", notNullValue())
+                .body("createdAt", notNullValue())
                 .extract()
                 .path("id")
                 .toString();
