@@ -2,13 +2,19 @@
   "info": {
     "_postman_id": "passeport-reparation-mvp",
     "name": "Passeport Réparation MVP",
-    "description": "Scénarios API alignés sur les User Stories MVP.\n\nPrérequis : `docker compose up` — gateway sur http://localhost:8090\n\nParcours : Photo → Catégorie + panne → Verdict € → Réparateurs",
+    "description": "Scénarios API alignés sur les User Stories MVP + compte (US-12 / US-22).\n\nPrérequis : `docker compose up` — gateway http://localhost:8090 · Mailpit http://localhost:8025\n\nParcours anonyme : Photo → Catégorie + panne → Verdict € → Réparateurs\nParcours compte : Register → Confirm (Mailpit) → Login → /mine → Claim",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:8090" },
     { "key": "mediaId", "value": "" },
-    { "key": "diagnosisId", "value": "" }
+    { "key": "diagnosisId", "value": "" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "authEmail", "value": "qa-auth@example.com" },
+    { "key": "authPassword", "value": "secret123" },
+    { "key": "confirmToken", "value": "" },
+    { "key": "anonymousDiagnosisId", "value": "" }
   ],
   "item": [
     {
@@ -377,6 +383,240 @@
               "raw": "{\n  \"mediaId\": \"{{mediaId}}\",\n  \"category\": \"WASHING_MACHINE\",\n  \"issueCode\": \"WM_DRAIN_PUMP\"\n}"
             },
             "url": "{{baseUrl}}/api/diagnoses"
+          }
+        }
+      ]
+    },
+    {
+      "name": "EPIC compte — Auth / claim (US-12 / US-22)",
+      "item": [
+        {
+          "name": "US-22 — POST /api/auth/register",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('authEmail', 'qa-' + Date.now() + '@example.com');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-22: register 201', () => pm.response.to.have.status(201));",
+                  "pm.test('US-22: message confirm', () => {",
+                  "  pm.expect(pm.response.json().message.toLowerCase()).to.include('confirm');",
+                  "});",
+                  "console.log('Ouvre Mailpit http://localhost:8025 et copie le token dans confirmToken');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{authEmail}}\",\n  \"password\": \"{{authPassword}}\",\n  \"firstName\": \"QA\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/register"
+          }
+        },
+        {
+          "name": "US-22 — GET /api/auth/confirm?token=",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-22: confirm 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/confirm?token={{confirmToken}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "confirm"],
+              "query": [{ "key": "token", "value": "{{confirmToken}}" }]
+            }
+          }
+        },
+        {
+          "name": "US-22 — POST /api/auth/login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-22: login 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('accessToken', body.accessToken);",
+                  "pm.collectionVariables.set('refreshToken', body.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{authEmail}}\",\n  \"password\": \"{{authPassword}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "US-22 — POST /api/diagnoses (Bearer) puis GET /mine",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-22: diagnosis 201 with userId', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  const d = pm.response.json();",
+                  "  pm.expect(d.userId).to.be.ok;",
+                  "  pm.collectionVariables.set('diagnosisId', d.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mediaId\": \"{{mediaId}}\",\n  \"category\": \"OVEN\",\n  \"issueCode\": \"OV_DOOR_SEAL\"\n}"
+            },
+            "url": "{{baseUrl}}/api/diagnoses"
+          }
+        },
+        {
+          "name": "US-22 — GET /api/diagnoses/mine",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-22: mine contains diagnosis', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  const list = pm.response.json();",
+                  "  const id = pm.collectionVariables.get('diagnosisId');",
+                  "  pm.expect(list.some(d => d.id === id)).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/diagnoses/mine"
+          }
+        },
+        {
+          "name": "US-12 — POST diagnostic anonyme",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-12: anonymous diagnosis', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  const d = pm.response.json();",
+                  "  pm.expect(d.userId).to.eql(null);",
+                  "  pm.collectionVariables.set('anonymousDiagnosisId', d.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mediaId\": \"{{mediaId}}\",\n  \"category\": \"OVEN\",\n  \"issueCode\": \"OV_DOOR_SEAL\"\n}"
+            },
+            "url": "{{baseUrl}}/api/diagnoses"
+          }
+        },
+        {
+          "name": "US-12 — POST /api/diagnoses/{id}/claim",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-12: claim 200', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().userId).to.be.ok;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/diagnoses/{{anonymousDiagnosisId}}/claim"
+          }
+        },
+        {
+          "name": "US-22 — POST /api/auth/refresh",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-22: refresh 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('accessToken', body.accessToken);",
+                  "pm.collectionVariables.set('refreshToken', body.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/refresh"
+          }
+        },
+        {
+          "name": "US-22 — POST /api/auth/logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('US-22: logout 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/logout"
           }
         }
       ]

@@ -16,6 +16,8 @@
 
     <properties>
         <rest-assured.version>5.5.0</rest-assured.version>
+        <e2e.base.url>http://localhost:8090</e2e.base.url>
+        <e2e.mailpit.url>http://localhost:8025</e2e.mailpit.url>
     </properties>
 
     <dependencies>
@@ -67,6 +69,7 @@
                             <groups>e2e</groups>
                             <systemPropertyVariables>
                                 <e2e.base.url>${e2e.base.url}</e2e.base.url>
+                                <e2e.mailpit.url>${e2e.mailpit.url}</e2e.mailpit.url>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
